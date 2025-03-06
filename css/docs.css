@@ -281,4 +281,38 @@
     .docs-hero p {
         font-size: 1rem;
     }
+}
+
+/* 文档导航按钮在桌面端隐藏，移动端显示 */
+.docs-nav-toggle {
+    display: none; /* 默认隐藏 */
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+}
+
+/* 仅在移动端显示导航按钮 */
+@media (max-width: 768px) {
+    .docs-nav-toggle {
+        display: block;
+    }
+    
+    /* 确保文档导航默认为隐藏状态 */
+    .docs-nav:not(.active) {
+        display: none;
+    }
+}
+
+/* 确保在桌面视图中导航栏始终显示 */
+@media (min-width: 769px) {
+    .docs-nav {
+        display: block !important; /* 强制显示，覆盖任何JS行为 */
+    }
 } 

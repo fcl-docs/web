@@ -6,6 +6,8 @@
     padding: 1rem;
     border-radius: 6px;
     position: relative;
+    border-left-width: 4px;
+    border-left-style: solid;
 }
 
 .custom-container-title {
@@ -113,16 +115,15 @@
     margin: 1rem 0;
     border-radius: 6px;
     overflow: hidden;
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .code-group-tabs {
     display: flex;
-    background-color: #e8e8e8;
+    background-color: #f1f1f1;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     overflow-x: auto;
-    scrollbar-width: thin;
 }
 
 .code-group-tabs::-webkit-scrollbar {
@@ -160,18 +161,24 @@
     color: var(--primary-color);
 }
 
+.code-group-contents {
+    background-color: #f6f8fa;
+}
+
 .code-group-content {
     display: none;
-    margin: 0;
 }
 
 .code-group-content.active {
     display: block;
 }
 
-.code-group-content pre {
-    margin: 0;
-    border-radius: 0;
+/* 确保样式优先级足够高 */
+.docs-article .code-group pre {
+    margin-top: 0;
+    margin-bottom: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 /* 代码块增强 */

@@ -1,74 +1,71 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 为移动设备添加菜单切换功能
+    // 处理移动菜单交互
     const header = document.querySelector('header');
     const nav = document.querySelector('header nav');
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
     
-    // 仅在移动视图下添加菜单按钮
-    if (window.innerWidth <= 768) {
-        // 防止重复创建按钮
-        if (!document.querySelector('.mobile-menu-button')) {
-            // 创建移动菜单按钮
-            const mobileMenuButton = document.createElement('button');
-            mobileMenuButton.className = 'mobile-menu-button';
-            mobileMenuButton.innerHTML = '☰';
-            mobileMenuButton.setAttribute('aria-label', '菜单');
+    // 创建遮罩层（如果不存在）并添加到导航后面
+    if (!document.querySelector('.overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        
+        // 将遮罩层插入到导航之后
+        if (nav && nav.parentNode) {
+            nav.parentNode.insertBefore(overlay, nav.nextSibling);
+        } else {
+            document.body.appendChild(overlay);
+        }
+        
+        // 点击遮罩层关闭菜单
+        overlay.addEventListener('click', function() {
+            this.style.opacity = '0';
             
-            // 将按钮插入到header容器的前部
-            const headerContainer = header.querySelector('.container');
-            headerContainer.insertBefore(mobileMenuButton, headerContainer.firstChild);
+            // 短暂延迟后移除类
+            setTimeout(() => {
+                nav.classList.remove('active');
+                this.classList.remove('active');
+                document.body.style.overflow = '';
+            }, 280);
+        });
+    }
+    
+    // 菜单按钮点击事件
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
             
-            // 创建遮罩层
-            if (!document.querySelector('.overlay')) {
-                const overlay = document.createElement('div');
-                overlay.className = 'overlay';
-                document.body.appendChild(overlay);
+            const overlay = document.querySelector('.overlay');
+            
+            if (nav.classList.contains('active')) {
+                // 关闭菜单 - 先淡出遮罩，同时收起菜单
+                overlay.style.opacity = '0';
                 
-                // 点击遮罩层关闭菜单
-                overlay.addEventListener('click', function() {
+                // 短暂延迟后移除类
+                setTimeout(() => {
                     nav.classList.remove('active');
                     overlay.classList.remove('active');
                     document.body.style.overflow = '';
-                });
+                }, 280); // 略短于过渡时间
+                
+            } else {
+                // 打开菜单 - 先显示但透明
+                overlay.classList.add('active');
+                overlay.style.opacity = '0';
+                document.body.style.overflow = 'hidden';
+                
+                // 添加微小延迟确保DOM更新
+                setTimeout(() => {
+                    nav.classList.add('active');
+                    overlay.style.opacity = '1';
+                }, 20);
             }
-            
-            // 添加点击事件
-            mobileMenuButton.addEventListener('click', function(e) {
-                e.stopPropagation(); // 阻止事件冒泡
-                nav.classList.toggle('active');
-                document.querySelector('.overlay').classList.toggle('active');
-                document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
-            });
-        }
+        });
     }
     
-    // 当窗口大小改变时重新评估
+    // 当窗口大小改变时处理导航状态
     window.addEventListener('resize', function() {
-        if (window.innerWidth <= 768) {
-            // 移动视图 - 如果没有按钮，添加按钮
-            if (!document.querySelector('.mobile-menu-button')) {
-                const button = document.createElement('button');
-                button.className = 'mobile-menu-button';
-                button.innerHTML = '☰';
-                button.setAttribute('aria-label', '菜单');
-                
-                const headerContainer = header.querySelector('.container');
-                headerContainer.insertBefore(button, headerContainer.firstChild);
-                
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    nav.classList.toggle('active');
-                    document.querySelector('.overlay').classList.toggle('active');
-                    document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
-                });
-            }
-        } else {
-            // 桌面视图 - 移除按钮并重置导航
-            const mobileButton = document.querySelector('.mobile-menu-button');
-            if (mobileButton) {
-                mobileButton.remove();
-            }
-            
-            // 确保导航可见并重置状态
+        if (window.innerWidth > 768) {
+            // 在桌面视图中重置导航状态
             nav.classList.remove('active');
             const overlay = document.querySelector('.overlay');
             if (overlay) overlay.classList.remove('active');
@@ -116,4 +113,40 @@ document.addEventListener('DOMContentLoaded', function() {
             img.removeAttribute('data-src');
         });
     }
-}); 
+    
+    // 添加导航关闭按钮
+    addNavCloseButton();
+});
+
+// 添加导航关闭按钮
+function addNavCloseButton() {
+    const nav = document.querySelector('header nav');
+    
+    // 如果已存在关闭按钮，不再添加
+    if (document.querySelector('.nav-close-button')) {
+        return;
+    }
+    
+    // 创建关闭按钮
+    const closeButton = document.createElement('button');
+    closeButton.className = 'nav-close-button';
+    closeButton.innerHTML = '✕';
+    closeButton.setAttribute('aria-label', '关闭菜单');
+    
+    // 添加到导航菜单
+    nav.appendChild(closeButton);
+    
+    // 添加点击事件
+    closeButton.addEventListener('click', function() {
+        const overlay = document.querySelector('.overlay');
+        
+        if (overlay) overlay.style.opacity = '0';
+        
+        // 短暂延迟后移除类
+        setTimeout(() => {
+            nav.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }, 280);
+    });
+} 

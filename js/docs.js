@@ -126,70 +126,64 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 加载文档内容
     function loadDoc(docPath) {
-        docsContainer.innerHTML = '<div class="loading">加载文档中...</div>';
+        if (!docPath) {
+            docsContainer.innerHTML = '<div class="error-message">未指定文档路径</div>';
+            return;
+        }
         
-        fetch(`data/docs/${docPath}.md`)
+        const filePath = `data/docs/${docPath}.md`;
+        
+        fetch(filePath)
             .then(response => {
-                if (!response.ok) throw new Error(`文档不存在：${docPath}`);
+                if (!response.ok) throw new Error('文档加载失败');
                 return response.text();
             })
             .then(markdown => {
                 try {
-                    console.log("处理MD文件:", docPath);
-                    
-                    // 检查并修复常见格式问题
-                    let processedMarkdown = markdown
-                        // 确保tip和info等标签后有空格
-                        .replace(/:::(tip|info|warning|danger|details)(\S)/g, ':::$1 $2')
-                        // 确保代码块格式正确
-                        .replace(/```(\w+)(\s*)\n/g, '```$1\n');
-                    
-                    // 处理自定义容器
-                    if (typeof fcl !== 'undefined') {
-                        processedMarkdown = fcl.processCustomContainers(processedMarkdown);
-                        console.log("处理后长度:", processedMarkdown.length);
+                    // 使用自定义容器处理器处理Markdown
+                    if (window.fcl && typeof fcl.processCustomContainers === 'function') {
+                        markdown = fcl.processCustomContainers(markdown);
                     } else {
-                        console.warn("FCL扩展未定义");
+                        console.warn('未找到自定义容器处理函数，原始Markdown将直接传递给marked');
                     }
                     
-                    // 使用带错误捕获的方式解析Markdown
-                    const html = marked.parse(processedMarkdown);
+                    // 使用marked转换Markdown为HTML
+                    let html = marked.parse(markdown);
                     
-                    // 创建文档容器并更新页面标题
-                    docsContainer.innerHTML = `<div class="docs-article">${html}</div>`;
+                    // 处理代码组
+                    if (window.fcl && typeof fcl.processCodeGroups === 'function') {
+                        html = fcl.processCodeGroups(html);
+                    }
+                    
+                    // 更新文档容器
+                    docsContainer.innerHTML = `<article class="docs-article">${html}</article>`;
+                    
+                    // 高亮代码块
+                    if (window.hljs) {
+                        document.querySelectorAll('.docs-article pre code').forEach(block => {
+                            hljs.highlightElement(block);
+                        });
+                    }
+                    
+                    // 初始化代码组交互
+                    if (window.fcl && typeof fcl.initCodeGroups === 'function') {
+                        fcl.initCodeGroups();
+                    }
+                    
+                    // 更新文档标题
                     updateDocTitle(docPath);
                     
-                    // 处理文档中的内部链接
-                    setTimeout(processDocLinks, 0);
-                    
-                    // 初始化代码组事件
-                    setTimeout(initCodeGroups, 0);
-                    
-                    // 添加语言标识到代码块
-                    setTimeout(addLanguageLabels, 0);
-                    
-                    // 滚动到页面顶部
+                    // 滚动到顶部
+                    docsContainer.scrollTop = 0;
                     window.scrollTo(0, 0);
                 } catch (error) {
-                    console.error('处理Markdown时出错:', error);
-                    docsContainer.innerHTML = `
-                        <div class="error-message">
-                            <h3>处理文档失败</h3>
-                            <p>无法处理文档: ${docPath}</p>
-                            <p>错误: ${error.message}</p>
-                        </div>
-                    `;
+                    console.error('解析Markdown时出错:', error);
+                    docsContainer.innerHTML = `<div class="error-message">解析文档内容时出错: ${error.message}</div>`;
                 }
             })
             .catch(error => {
                 console.error('加载文档时出错:', error);
-                docsContainer.innerHTML = `
-                    <div class="error-message">
-                        <h3>加载文档失败</h3>
-                        <p>无法加载请求的文档: ${docPath}</p>
-                        <p>错误: ${error.message}</p>
-                    </div>
-                `;
+                docsContainer.innerHTML = `<div class="error-message">无法加载文档: ${error.message}</div>`;
             });
     }
     
@@ -270,38 +264,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 初始化代码组交互
-    function initCodeGroups() {
-        console.log("初始化代码组");
-        document.querySelectorAll('.code-group-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                const parent = this.closest('.code-group');
-                
-                // 移除所有active类
-                parent.querySelectorAll('.code-group-tab').forEach(t => t.classList.remove('active'));
-                parent.querySelectorAll('.code-group-content').forEach(c => c.classList.remove('active'));
-                
-                // 添加active类到当前选中的tab和内容
-                this.classList.add('active');
-                parent.querySelector(`.code-group-content[data-tab="${tabId}"]`).classList.add('active');
-            });
-        });
-    }
-    
-    // 添加语言标签到代码块
-    function addLanguageLabels() {
-        document.querySelectorAll('.docs-article pre code').forEach(codeBlock => {
-            const parentPre = codeBlock.parentElement;
-            const className = codeBlock.className;
-            const languageMatch = className.match(/language-(\w+)/);
-            
-            if (languageMatch && languageMatch[1]) {
-                parentPre.setAttribute('data-language', languageMatch[1]);
-            }
-        });
-    }
-    
     // 文档搜索功能
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase();
@@ -348,7 +310,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     };
     
-    // 添加移动端导航切换功能
+    // 修改处理响应式布局的函数
+    function handleResponsiveLayout() {
+        const mobileToggle = document.querySelector('.docs-nav-toggle');
+        const docsNav = document.querySelector('.docs-nav');
+        
+        // 根据窗口宽度调整界面
+        if (window.innerWidth <= 768) {
+            // 移动视图 - 确保按钮显示
+            if (mobileToggle) {
+                mobileToggle.style.display = 'block';
+            }
+            
+            // 初始化为关闭状态（除非已被用户打开）
+            if (docsNav && !docsNav.classList.contains('active')) {
+                docsNav.style.display = 'none';
+            }
+        } else {
+            // 桌面视图 - 隐藏按钮，确保导航显示
+            if (mobileToggle) {
+                mobileToggle.style.display = 'none';
+            }
+            
+            if (docsNav) {
+                docsNav.style.display = 'block';
+                // 移除可能的active类防止样式冲突
+                docsNav.classList.remove('processed');
+            }
+        }
+    }
+    
+    // 修改移动导航按钮添加函数
     function addMobileNavToggle() {
         const sidebarElement = document.querySelector('.docs-sidebar');
         
@@ -370,27 +362,19 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', function() {
             const docsNavElement = document.querySelector('.docs-nav');
             docsNavElement.classList.toggle('active');
+            
+            // 更新显示状态
+            if (docsNavElement.classList.contains('active')) {
+                docsNavElement.style.display = 'block';
+            } else {
+                docsNavElement.style.display = 'none';
+            }
+            
             this.classList.toggle('active');
         });
-    }
-    
-    // 添加响应式调整函数
-    function handleResponsiveLayout() {
-        const mobileToggle = document.querySelector('.docs-nav-toggle');
-        const docsNav = document.querySelector('.docs-nav');
         
-        if (window.innerWidth <= 768) {
-            // 在移动视图中初始化为关闭状态
-            if (docsNav && !docsNav.className.includes('processed')) {
-                docsNav.classList.add('processed');
-                docsNav.classList.remove('active');
-            }
-        } else {
-            // 在桌面视图中始终显示
-            if (docsNav) {
-                docsNav.classList.add('active');
-            }
-        }
+        // 立即应用响应式布局
+        handleResponsiveLayout();
     }
     
     // 初始加载文档数据
@@ -403,7 +387,11 @@ document.addEventListener('DOMContentLoaded', function() {
         highlightActiveDoc(currentDocPath);
     });
     
-    // 在DOMContentLoaded事件中添加窗口调整监听
-    window.addEventListener('resize', handleResponsiveLayout);
-    document.addEventListener('DOMContentLoaded', handleResponsiveLayout);
+    // 添加窗口大小调整监听器
+    window.addEventListener('resize', function() {
+        handleResponsiveLayout();
+    });
+
+    // 确保在DOMContentLoaded事件中进行初始处理
+    setTimeout(handleResponsiveLayout, 100);
 }); 

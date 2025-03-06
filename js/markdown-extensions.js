@@ -3,6 +3,9 @@
  * 实现类似VitePress的Markdown增强功能
  */
 
+// 定义FCL命名空间以避免全局污染
+window.fcl = window.fcl || {};
+
 // 自定义标记扩展
 const fcl = {
   // 自定义容器正则表达式
@@ -18,119 +21,38 @@ const fcl = {
   
   // 处理自定义容器
   processCustomContainers: function(markdown) {
-    console.log("开始处理Markdown扩展");
+    // 定义自定义容器的正则表达式模式
+    const containerPattern = /^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)(?:\n):::$/gm;
     
-    // 首先预处理markdown，规范化容器标记
-    let normalizedMd = markdown.replace(/^:::(\w+)[ ]*(.*)$/gm, "::: $1 $2");
-    
-    const lines = normalizedMd.split('\n');
-    const result = [];
-    
-    let inContainer = false;
-    let containerType = null;
-    let containerTitle = '';
-    let containerContent = [];
-    
-    let inCodeGroup = false;
-    let codeBlocks = [];
-    let currentBlock = null;
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      // 检查容器结束
-      if (this.containers.codeEnd.test(line)) {
-        if (inCodeGroup) {
-          // 结束代码组
-          if (currentBlock) {
-            codeBlocks.push(currentBlock);
-            currentBlock = null;
-          }
-          
-          result.push(this.renderCodeGroup(codeBlocks));
-          inCodeGroup = false;
-          codeBlocks = [];
-          continue;
-        } else if (inContainer) {
-          // 结束普通容器
-          result.push(this.renderContainer(containerType, containerTitle, containerContent.join('\n')));
-          inContainer = false;
-          containerType = null;
-          containerTitle = '';
-          containerContent = [];
-          continue;
-        }
-      }
-      
-      // 检查代码组容器开始
-      if (this.containers.code.test(line)) {
-        inCodeGroup = true;
-        continue;
-      }
-      
-      // 处理代码组内的代码块
-      if (inCodeGroup && line.startsWith('```')) {
-        if (currentBlock) {
-          // 结束当前代码块
-          currentBlock.content.push(line);
-          codeBlocks.push(currentBlock);
-          currentBlock = null;
-        } else {
-          // 开始新代码块
-          let lang = '';
-          if (line.length > 3) {
-            lang = line.substring(3).trim();
-          }
-          
-          currentBlock = {
-            title: this.getLanguageName(lang),
-            language: lang,
-            content: [line]
-          };
-        }
-        continue;
-      }
-      
-      // 处理代码块内容
-      if (currentBlock) {
-        currentBlock.content.push(line);
-        continue;
-      }
-      
-      // 检查其他容器开始
-      let containerFound = false;
-      for (const [type, regex] of Object.entries(this.containers)) {
-        if (type === 'code' || type === 'codeEnd') continue;
+    // 处理自定义容器，将其转换为HTML
+    return markdown.replace(containerPattern, function(match, spacing, type, title, content) {
+        title = title || getDefaultTitle(type);
         
-        const match = line.match(regex);
-        if (match) {
-          containerType = type;
-          containerTitle = match[1] ? match[1].trim() : '';
-          inContainer = true;
-          containerContent = [];
-          containerFound = true;
-          break;
+        let processedContent = content.trim();
+        // 递归处理嵌套容器
+        if (containerPattern.test(processedContent)) {
+            containerPattern.lastIndex = 0; // 重置正则表达式索引
+            processedContent = fcl.processCustomContainers(processedContent);
         }
-      }
-      
-      if (containerFound) {
-        continue;
-      }
-      
-      // 处理常规行
-      if (inContainer) {
-        containerContent.push(line);
-      } else if (!inCodeGroup) {
-        result.push(line);
-      }
-    }
+        
+        // 使用适当的HTML格式化自定义容器
+        return `<div class="custom-container ${type}">
+            <p class="custom-container-title">${title}</p>
+            <div class="custom-container-content">${processedContent}</div>
+        </div>`;
+    });
     
-    // 关闭任何未关闭的容器
-    if (inContainer) {
-      result.push(this.renderContainer(containerType, containerTitle, containerContent.join('\n')));
+    // 为不同类型的容器提供默认标题
+    function getDefaultTitle(type) {
+        switch (type) {
+            case 'tip': return '提示';
+            case 'warning': return '警告';
+            case 'danger': return '危险';
+            case 'info': return '信息';
+            case 'details': return '详细信息';
+            default: return '';
+        }
     }
-    
-    return result.join('\n');
   },
   
   // 渲染容器
@@ -189,5 +111,100 @@ const fcl = {
     };
     
     return languageMap[lang] || lang || 'Text';
+  },
+  
+  // 处理代码组的函数
+  processCodeGroups: function(html) {
+    const codeBlockPattern = /<pre><code class="language-([^"]+)">([\s\S]*?)<\/code><\/pre>/g;
+    let match;
+    let codeBlocks = [];
+    let lastIndex = 0;
+    
+    // 收集所有代码块
+    while ((match = codeBlockPattern.exec(html)) !== null) {
+        codeBlocks.push({
+            lang: match[1],
+            content: match[2],
+            start: match.index,
+            end: match.index + match[0].length
+        });
+    }
+    
+    // 处理连续的代码块作为代码组
+    let result = '';
+    let i = 0;
+    
+    while (i < codeBlocks.length) {
+        if (i + 1 < codeBlocks.length && 
+            codeBlocks[i].end + 20 > codeBlocks[i+1].start) { // 允许适当的间隔
+            
+            // 这是一个代码组的开始
+            let groupStart = i;
+            let tabs = '';
+            let contents = '';
+            
+            // 将HTML从上一个位置到当前代码组开始的部分添加到结果中
+            result += html.substring(lastIndex, codeBlocks[groupStart].start);
+            
+            // 收集代码组中的所有代码块
+            while (i < codeBlocks.length && 
+                  (i === groupStart || codeBlocks[i-1].end + 20 > codeBlocks[i].start)) {
+                const block = codeBlocks[i];
+                const active = i === groupStart ? ' active' : '';
+                
+                tabs += `<button class="code-group-tab${active}" data-tab="${i - groupStart}">${block.lang}</button>`;
+                contents += `<div class="code-group-content${active}" data-tab="${i - groupStart}"><pre><code class="language-${block.lang}">${block.content}</code></pre></div>`;
+                
+                i++;
+            }
+            
+            // 生成代码组HTML
+            result += `<div class="code-group">
+                <div class="code-group-tabs">${tabs}</div>
+                <div class="code-group-contents">${contents}</div>
+            </div>`;
+            
+            // 更新lastIndex以跳过已处理的代码块
+            lastIndex = codeBlocks[i-1].end;
+        } else {
+            // 单个代码块，保持不变
+            result += html.substring(lastIndex, codeBlocks[i].end);
+            lastIndex = codeBlocks[i].end;
+            i++;
+        }
+    }
+    
+    // 添加剩余的HTML
+    result += html.substring(lastIndex);
+    
+    return result;
+  },
+  
+  // 初始化代码组事件处理
+  initCodeGroups: function() {
+    document.querySelectorAll('.code-group-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const group = this.closest('.code-group');
+            const tabIndex = this.getAttribute('data-tab');
+            
+            // 更新标签状态
+            group.querySelectorAll('.code-group-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // 更新内容状态
+            group.querySelectorAll('.code-group-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            group.querySelector(`.code-group-content[data-tab="${tabIndex}"]`).classList.add('active');
+        });
+    });
   }
-}; 
+};
+
+// 在DOMContentLoaded时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化代码组事件处理
+    fcl.initCodeGroups();
+}); 
