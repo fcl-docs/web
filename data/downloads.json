@@ -5,7 +5,7 @@
       "description": "支持大多数设备",
       "version": "1.2.1.1",
       "date": "2025-03-06",
-      "size": "约150MB",
+      "size": "约217MB",
       "compatibility": "大多数Android设备"
     },
     "arm64": {
@@ -13,7 +13,7 @@
       "description": "适用于ARM64架构设备",
       "version": "1.2.1.1",
       "date": "2025-03-06",
-      "size": "约145MB",
+      "size": "约115MB",
       "compatibility": "搭载ARM64架构的设备"
     },
     "x86": {
@@ -21,7 +21,7 @@
       "description": "适用于X86架构设备",
       "version": "1.2.1.1",
       "date": "2025-03-06",
-      "size": "约140MB",
+      "size": "约106MB",
       "compatibility": "搭载X86架构的设备"
     }
   },
@@ -29,33 +29,32 @@
     "github": {
       "name": "GitHub (国际)",
       "urls": {
-        "all": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-all.apk",
-        "arm64": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-arm64.apk",
-        "x86": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-x86.apk"
+        "all": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/1.2.1.1/FCL-release-1.2.1.1-all.apk",
+        "arm64": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/1.2.1.1/FCL-release-1.2.1.1-arm64.apk",
+        "x86": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/1.2.1.1/FCL-release-1.2.1.1-x86.apk"
       }
     },
-    "gitee": {
-      "name": "Gitee (中国大陆)",
+    "123yunpan": {
+      "name": "123云盘 (中国大陆)",
       "urls": {
-        "all": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-all.apk",
-        "arm64": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-arm64.apk",
-        "x86": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-x86.apk"
+        "all": "https://www.123684.com/s/zcTSVv-sGFO3",
+        "arm64": "https://www.123684.com/s/zcTSVv-sGFO3",
+        "x86": "https://www.123684.com/s/zcTSVv-sGFO3"
       }
     },
-    "aliyun": {
-      "name": "阿里云 (中国大陆)",
+    "8lanmi": {
+      "name": "八蓝米 (中国大陆)",
       "urls": {
-        "all": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-all.apk",
-        "arm64": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-arm64.apk",
-        "x86": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-x86.apk"
+        "all": "https://alist.8mi.tech/FCL",
+        "arm64": "https://alist.8mi.tech/FCL",
       }
     },
-    "tencent": {
-      "name": "腾讯云 (中国大陆)",
+    "cf": {
+      "name": "Cloudflare (国际)",
       "urls": {
-        "all": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-all.apk",
-        "arm64": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-arm64.apk",
-        "x86": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-x86.apk"
+        "all": "https://fcl.asia/FCL-release-1.2.1.1-all.apk",
+        "arm64": "https://fcl.asia/FCL-release-1.2.1.1-arm64.apk",
+        "x86": "https://fcl.asia/FCL-release-1.2.1.1-x86.apk"
       }
     }
   },
