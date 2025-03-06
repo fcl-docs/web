@@ -249,7 +249,7 @@
     
     /* 调整文章内容边距 */
     .docs-article {
-        padding: 10px 0;
+        padding: 10px;
     }
     
     /* 优化嵌套列表在移动端的显示 */

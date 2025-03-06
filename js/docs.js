@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // 更新DOM
-                    docsContainer.innerHTML = `<article class="docs-article">${html}</article>`;
+                    docsContainer.innerHTML = `${html}`;
                     console.log('DOM已更新');
                     
                     // 高亮代码块
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const docsNavContainer = document.querySelector('.docs-sidebar');
         const navToggleBtn = document.createElement('button');
         navToggleBtn.className = 'docs-nav-toggle';
-        navToggleBtn.innerHTML = '文档目录 <span>▼</span>';
+        navToggleBtn.innerHTML = '文档目录 ';
         navToggleBtn.setAttribute('aria-label', '切换文档导航');
         
         navToggleBtn.addEventListener('click', function() {
