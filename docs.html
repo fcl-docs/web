@@ -84,7 +84,54 @@
         .menu-overlay {
             opacity: 1 !important;
         }
+        
+        /* 确保文档始终有内容显示 */
+        #docs-container {
+            min-height: 300px;
+        }
+        
+        /* 改进移动端的文档导航样式 */
+        @media (max-width: 768px) {
+            .docs-nav-toggle {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                background-color: #2c974b;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-bottom: 15px;
+                text-align: left;
+            }
+            
+            .docs-nav-toggle span {
+                float: right;
+            }
+            
+            .docs-nav {
+                display: none;
+            }
+            
+            .docs-nav.active {
+                display: block;
+            }
+        }
     </style>
+    <script>
+        // 检查页面URL，如果是纯docs路径没有参数，则重定向到第一篇文章
+        (function() {
+            // 获取当前路径
+            const path = window.location.pathname;
+            const hasParams = window.location.search.length > 0;
+            
+            // 如果是纯/docs或/docs.html路径且没有参数，重定向到第一篇安装文档
+            if ((path.endsWith('/docs') || path.endsWith('/docs.html')) && !hasParams) {
+                window.location.href = 'docs.html?doc=getting-started/installation';
+            }
+        })();
+    </script>
 </head>
 <body>
     <header>

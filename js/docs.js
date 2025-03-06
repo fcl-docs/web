@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 从URL获取文档路径
+    // 从URL获取文档路径，简化版本
     function getDocPathFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('doc') || 'getting-started/introduction';
+        return urlParams.get('doc') || '';  // 如果没有查询参数，返回空字符串
     }
     
     // 更新URL以反映当前文档
@@ -49,31 +49,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 docsData = data;
                 renderDocsNav(data);
                 
-                // 添加移动端导航切换按钮
-                addMobileNavToggle();
+                // 默认文档路径 - 硬编码为安装指南
+                const defaultDocPath = 'getting-started/installation';
                 
-                // 强制处理响应式布局
-                handleResponsiveLayout();
+                // 获取URL中的文档路径，如果没有则使用默认值
+                currentDocPath = getDocPathFromUrl() || defaultDocPath;
                 
-                // 获取URL中的文档路径
-                currentDocPath = getDocPathFromUrl();
-                
-                // 如果URL中没有指定文档路径，则加载第一个类别的第一篇文档
-                if (!currentDocPath && data.categories && data.categories.length > 0) {
-                    const firstCategory = data.categories[0];
-                    if (firstCategory.docs && firstCategory.docs.length > 0) {
-                        currentDocPath = firstCategory.docs[0].path;
-                        // 更新URL但不触发页面刷新
-                        const newUrl = window.location.pathname + '?doc=' + currentDocPath;
-                        history.replaceState(null, '', newUrl);
-                    }
+                // 确保URL包含文档路径
+                if (!window.location.search) {
+                    history.replaceState(null, '', `docs.html?doc=${defaultDocPath}`);
                 }
                 
-                // 加载文档内容
-                if (currentDocPath) {
-                    loadDoc(currentDocPath);
-                    highlightActiveDoc(currentDocPath);
-                }
+                // 立即加载文档内容
+                loadDoc(currentDocPath);
+                highlightActiveDoc(currentDocPath);
             })
             .catch(error => {
                 console.error('加载文档数据时出错:', error);
@@ -395,55 +384,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 修改移动导航按钮添加函数
+    // 添加移动端导航切换按钮函数
     function addMobileNavToggle() {
-        const sidebarElement = document.querySelector('.docs-sidebar');
+        const docsNavContainer = document.querySelector('.docs-sidebar');
+        const navToggleBtn = document.createElement('button');
+        navToggleBtn.className = 'docs-nav-toggle';
+        navToggleBtn.innerHTML = '文档目录 <span>▼</span>';
+        navToggleBtn.setAttribute('aria-label', '切换文档导航');
         
-        // 如果已经存在切换按钮，则不再添加
-        if (document.querySelector('.docs-nav-toggle')) {
-            return;
-        }
-        
-        // 创建导航切换按钮
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'docs-nav-toggle';
-        toggleButton.textContent = '文档导航';
-        toggleButton.setAttribute('aria-label', '切换文档导航');
-        
-        // 将按钮插入到侧边栏的最前面
-        if (sidebarElement) {
-            // 将按钮放在搜索栏后面
-            const searchDiv = sidebarElement.querySelector('.docs-search');
-            if (searchDiv) {
-                searchDiv.insertAdjacentElement('afterend', toggleButton);
-            } else {
-                sidebarElement.insertBefore(toggleButton, sidebarElement.firstChild);
+        navToggleBtn.addEventListener('click', function() {
+            docsNav.classList.toggle('active');
+            this.classList.toggle('active');
+            const span = this.querySelector('span');
+            if (span) {
+                span.textContent = docsNav.classList.contains('active') ? '▲' : '▼';
             }
-            
-            // 添加点击事件
-            toggleButton.addEventListener('click', function() {
-                const docsNavElement = document.querySelector('.docs-nav');
-                if (docsNavElement) {
-                    docsNavElement.classList.toggle('active');
-                    this.classList.toggle('active');
-                    
-                    // 更新显示状态 - 使用display属性会更可靠
-                    if (docsNavElement.classList.contains('active')) {
-                        docsNavElement.style.display = 'block';
-                    } else {
-                        docsNavElement.style.display = 'none';
-                    }
-                }
-            });
-            
-            // 在移动端默认收起导航
-            if (window.innerWidth <= 768) {
-                const docsNavElement = document.querySelector('.docs-nav');
-                if (docsNavElement) {
-                    docsNavElement.style.display = 'none';
-                }
-            }
-        }
+        });
+        
+        // 将按钮插入到导航之前
+        docsNavContainer.insertBefore(navToggleBtn, docsNav);
     }
     
     // 修复移动菜单初始化函数
