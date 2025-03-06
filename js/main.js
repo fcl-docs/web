@@ -4,32 +4,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('header nav');
     const mobileMenuButton = document.querySelector('.mobile-menu-button');
     
-    // 创建遮罩层（如果不存在）并添加到导航后面
+    // 修改遮罩层的创建和插入逻辑
     if (!document.querySelector('.overlay')) {
         const overlay = document.createElement('div');
         overlay.className = 'overlay';
         
-        // 将遮罩层插入到导航之后
-        if (nav && nav.parentNode) {
-            nav.parentNode.insertBefore(overlay, nav.nextSibling);
-        } else {
-            document.body.appendChild(overlay);
-        }
+        // 将遮罩层插入到body中，而不是导航之后
+        document.body.appendChild(overlay);
         
-        // 点击遮罩层关闭菜单
+        // 点击遮罩层关闭菜单，但不阻止事件冒泡
         overlay.addEventListener('click', function() {
             this.style.opacity = '0';
             
+            // 关闭导航菜单
+            const nav = document.querySelector('header nav');
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            
             // 短暂延迟后移除类
             setTimeout(() => {
-                nav.classList.remove('active');
+                if (nav) nav.classList.remove('active');
+                if (mobileMenuButton) mobileMenuButton.classList.remove('active');
                 this.classList.remove('active');
                 document.body.style.overflow = '';
             }, 280);
         });
     }
     
-    // 菜单按钮点击事件
+    // 修改菜单按钮点击事件
     if (mobileMenuButton) {
         mobileMenuButton.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -37,27 +38,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const overlay = document.querySelector('.overlay');
             
             if (nav.classList.contains('active')) {
-                // 关闭菜单 - 先淡出遮罩，同时收起菜单
-                overlay.style.opacity = '0';
+                // 关闭菜单 - 先淡出遮罩
+                if (overlay) overlay.style.opacity = '0';
                 
                 // 短暂延迟后移除类
                 setTimeout(() => {
                     nav.classList.remove('active');
-                    overlay.classList.remove('active');
+                    this.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
                     document.body.style.overflow = '';
-                }, 280); // 略短于过渡时间
+                }, 280);
                 
             } else {
-                // 打开菜单 - 先显示但透明
-                overlay.classList.add('active');
-                overlay.style.opacity = '0';
-                document.body.style.overflow = 'hidden';
+                // 打开菜单 - 先添加活动类
+                nav.classList.add('active');
+                this.classList.add('active');
                 
-                // 添加微小延迟确保DOM更新
-                setTimeout(() => {
-                    nav.classList.add('active');
-                    overlay.style.opacity = '1';
-                }, 20);
+                // 然后激活遮罩层
+                if (overlay) {
+                    overlay.classList.add('active');
+                    setTimeout(() => {
+                        overlay.style.opacity = '1';
+                    }, 20);
+                }
+                
+                document.body.style.overflow = 'hidden';
             }
         });
     }

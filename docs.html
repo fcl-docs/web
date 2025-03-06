@@ -8,6 +8,38 @@
     <link rel="stylesheet" href="css/docs.css">
     <link rel="stylesheet" href="css/markdown-extensions.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/atom-one-light.min.css">
+    <style>
+        /* 强制显示顶部导航样式 */
+        header nav {
+            display: block !important;
+            position: static !important;
+            background: transparent !important;
+            left: 0 !important;
+        }
+        
+        @media (max-width: 768px) {
+            header nav {
+                display: none !important;
+            }
+            
+            header nav.active {
+                position: relative;
+                z-index: 1000;
+                display: block !important;
+            }
+            
+            .overlay {
+                z-index: 90;
+            }
+            
+            /* 禁用遮罩层对菜单的影响 */
+            .overlay.active + nav,
+            .overlay.active ~ nav {
+                opacity: 1 !important;
+                display: block !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>

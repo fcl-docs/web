@@ -96,13 +96,19 @@ section {
     background-color: var(--hover-color);
 }
 
-/* 头部样式 */
+/* ==== 重写头部和导航条样式 ==== */
+
+/* 先删除所有与header相关的旧样式 */
+/* 保留基本框架，完全重写导航部分 */
+
+/* 基本头部样式 */
 header {
-    background-color: var(--primary-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #2c974b;
+    padding: 0;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 header .container {
@@ -110,34 +116,141 @@ header .container {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
+    position: relative;
 }
 
+/* LOGO样式 */
 .logo h1 {
+    margin: 0;
+    padding: 0;
     font-size: 24px;
-    margin-bottom: 0;
     color: white;
 }
 
-/* 导航样式 */
+/* 导航菜单 - 确保完全重写 */
 header nav {
-    display: block;
+    display: block !important; /* 强制默认显示 */
+    position: static !important; /* 确保不是fixed或absolute */
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    left: 0 !important; /* 确保不偏移 */
+    top: 0 !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    position: relative;
+    z-index: 100;
 }
 
+/* 导航菜单列表 */
 header nav ul {
     display: flex;
-    align-items: center;
+    list-style: none;
     margin: 0;
     padding: 0;
 }
 
 header nav ul li {
-    margin-left: 20px;
+    margin: 0 0 0 30px;
+    padding: 0;
 }
 
 header nav ul li a {
     color: white;
-    font-weight: 500;
     text-decoration: none;
+    font-weight: 500;
+    padding: 5px 0;
+    display: block;
+    position: relative;
+}
+
+header nav ul li a:hover,
+header nav ul li a.active {
+    opacity: 0.9;
+}
+
+header nav ul li a.active::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 1px;
+}
+
+/* 隐藏移动菜单按钮(桌面视图) */
+.mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* 移动端样式 - 完全重写 */
+@media (max-width: 768px) {
+    /* 显示移动菜单按钮 */
+    .mobile-menu-button {
+        display: block;
+        padding: 5px 10px;
+    }
+    
+    .mobile-menu-button.active {
+        transform: rotate(90deg);
+    }
+    
+    /* 头部容器调整 */
+    header .container {
+        flex-wrap: wrap;
+    }
+    
+    /* 导航菜单样式调整 */
+    header nav {
+        display: none !important; /* 覆盖之前的!important */
+        width: 100% !important;
+        margin-top: 15px !important;
+        background-color: rgba(44, 151, 75, 0.95) !important;
+        border-radius: 4px;
+        z-index: 100 !important;
+    }
+    
+    /* 激活时显示 */
+    header nav.active {
+        display: block !important;
+    }
+    
+    /* 列表样式调整 */
+    header nav ul {
+        flex-direction: column;
+    }
+    
+    header nav ul li {
+        margin: 0;
+    }
+    
+    header nav ul li a {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    header nav ul li:last-child a {
+        border-bottom: none;
+    }
+    
+    /* 移除active下划线,改为背景变色 */
+    header nav ul li a.active::after {
+        display: none;
+    }
+    
+    header nav ul li a.active {
+        background-color: rgba(255,255,255,0.1);
+    }
 }
 
 /* 页脚样式 */
@@ -196,59 +309,6 @@ footer {
     font-size: 14px;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    header .container {
-        flex-wrap: wrap;
-        padding: 10px 15px;
-    }
-    
-    .mobile-menu-button {
-        display: block;
-        transition: transform 0.3s;
-    }
-    
-    .mobile-menu-button.active {
-        transform: rotate(90deg);
-    }
-    
-    header nav {
-        display: none;
-        width: 100%;
-        margin-top: 10px;
-        background-color: rgba(44, 151, 75, 0.95);
-        border-radius: 4px;
-        position: static !important;
-        padding: 0 !important;
-        height: auto !important;
-        max-width: none !important;
-        left: 0 !important;
-    }
-    
-    header nav.active {
-        display: block;
-    }
-    
-    header nav ul {
-        flex-direction: column;
-    }
-    
-    header nav ul li {
-        margin: 0;
-        width: 100%;
-    }
-    
-    header nav ul li a {
-        padding: 12px 15px;
-        display: block;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    header nav ul li:last-child a {
-        border-bottom: none;
-    }
-}
-
 /* 确保在桌面视图中显示导航 */
 @media (min-width: 769px) {
     .mobile-menu-button {
@@ -258,17 +318,6 @@ footer {
     header nav {
         display: block !important;
     }
-}
-
-/* 修改移动菜单按钮样式 */
-.mobile-menu-button {
-    display: none;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 5px 10px;
 }
 
 /* 添加一些视觉效果 */
@@ -312,7 +361,7 @@ footer {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
-    z-index: 999;
+    z-index: 90;
     overflow: hidden;
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
