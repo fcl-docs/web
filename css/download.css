@@ -175,6 +175,103 @@
     width: 100%;
 }
 
+/* 恢复并增强安装指南区域样式 */
+.installation-guide {
+    background-color: white;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.installation-guide h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--hover-color);
+    padding-bottom: 10px;
+}
+
+.installation-guide .steps {
+    counter-reset: step-counter;
+    margin-bottom: 30px;
+}
+
+.installation-guide .step {
+    position: relative;
+    padding-left: 60px;
+    margin-bottom: 25px;
+    min-height: 50px;
+    counter-increment: step-counter;
+}
+
+.installation-guide .step:before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.installation-guide .step h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.installation-guide .step p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.installation-guide .step img {
+    max-width: 100%;
+    border-radius: 5px;
+    margin: 15px 0;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.installation-guide .troubleshooting {
+    background-color: var(--hover-color);
+    border-left: 4px solid var(--primary-color);
+    padding: 15px 20px;
+    margin-top: 30px;
+    border-radius: 0 5px 5px 0;
+}
+
+.installation-guide .troubleshooting h4 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.installation-guide .troubleshooting ul {
+    padding-left: 20px;
+}
+
+.installation-guide .troubleshooting ul li {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.installation-guide .troubleshooting ul li:before {
+    content: "•";
+    color: var(--primary-color);
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
 /* 加强下载页面在移动端的显示 */
 @media (max-width: 768px) {
     /* 已有的样式 */
@@ -207,5 +304,19 @@
         white-space: nowrap;
         padding: 8px 15px;
         font-size: 0.9rem;
+    }
+    
+    .installation-guide {
+        padding: 20px 15px;
+    }
+    
+    .installation-guide .step {
+        padding-left: 50px;
+    }
+    
+    .installation-guide .step:before {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
     }
 }
