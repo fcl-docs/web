@@ -4,6 +4,8 @@
   "description": "Fold Craft Launcher 文档网站",
   "private": true,
   "scripts": {
-    "build": "echo '静态网站构建完成'"
+    "dev": "echo '开发模式 - 静态网站无需构建'",
+    "build": "echo '构建模式 - 静态网站无需构建'",
+    "start": "echo '启动模式 - 静态网站直接部署'"
   }
 }

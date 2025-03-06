@@ -1,9 +1,11 @@
 # Cloudflare Pages 配置
 name = "fcl-docs"
+compatibility_date = "2023-10-30"
 
 # Pages 特定配置
 [build]
-command = "echo '静态网站无需构建'"
+command = "bash ./build.sh"
+publish = "."
 
 [build.upload]
 format = "directory"
@@ -11,4 +13,7 @@ dir = "."
 
 [site]
 bucket = "."
-entry-point = "." 
+entry-point = "."
+
+[build.environment]
+NODE_VERSION = "18" 

@@ -1,0 +1,14 @@
+{
+  "name": "fcl-docs",
+  "build": {
+    "command": "bash ./build.sh",
+    "output_directory": ".",
+    "root_directory": "."
+  },
+  "production": {
+    "environment_variables": {}
+  },
+  "preview": {
+    "environment_variables": {}
+  }
+} 
