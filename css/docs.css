@@ -285,28 +285,56 @@
 
 /* 文档导航按钮在桌面端隐藏，移动端显示 */
 .docs-nav-toggle {
-    display: none; /* 默认隐藏 */
-    background-color: var(--primary-color);
+    display: none;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    background-color: #4a6cf7;
     color: white;
     border: none;
-    padding: 8px 15px;
     border-radius: 4px;
     cursor: pointer;
-    margin-bottom: 15px;
     font-weight: 500;
-    text-align: center;
     width: 100%;
+    text-align: left;
+    position: relative;
 }
 
-/* 仅在移动端显示导航按钮 */
+.docs-nav-toggle::after {
+    content: "▼";
+    position: absolute;
+    right: 15px;
+    transition: transform 0.3s ease;
+}
+
+.docs-nav-toggle.active::after {
+    transform: rotate(180deg);
+}
+
+/* 确保在移动端正确显示按钮 */
 @media (max-width: 768px) {
     .docs-nav-toggle {
         display: block;
     }
     
-    /* 确保文档导航默认为隐藏状态 */
-    .docs-nav:not(.active) {
+    .docs-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .docs-nav {
         display: none;
+    }
+    
+    .docs-nav.active {
+        display: block;
+    }
+    
+    .docs-layout {
+        flex-direction: column;
+    }
+    
+    .docs-main {
+        width: 100%;
     }
 }
 

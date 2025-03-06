@@ -8,21 +8,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 配置 marked 选项
     marked.setOptions({
+        headerIds: true,     // 启用标题ID
+        gfm: true,           // 启用GitHub风格Markdown
+        breaks: false,       // 不将换行符转换为<br>
+        pedantic: false,     // 非严格模式
+        mangle: false,       // 不转义HTML
+        sanitize: false,     // 不净化HTML输入
+        smartLists: true,    // 使用智能列表
+        smartypants: false,  // 不使用智能标点
+        xhtml: false,        // 不使用XHTML
         highlight: function(code, lang) {
-            // 检查 hljs 是否已定义，避免错误
-            if (lang && window.hljs && hljs.getLanguage(lang)) {
+            // 代码高亮
+            if (window.hljs && lang && hljs.getLanguage(lang)) {
                 try {
                     return hljs.highlight(code, { language: lang }).value;
-                } catch (e) {
-                    console.error('高亮显示错误:', e);
-                }
+                } catch (e) {}
             }
-            return code; // 如果无法高亮，返回原始代码
-        },
-        gfm: true,
-        breaks: false,
-        pedantic: false,
-        headerIds: true
+            return code; 
+        }
     });
     
     // 从URL获取文档路径
@@ -51,6 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 添加移动端导航切换按钮
                 addMobileNavToggle();
+                
+                // 强制处理响应式布局
+                handleResponsiveLayout();
                 
                 // 获取URL中的文档路径或使用默认值
                 currentDocPath = getDocPathFromUrl();
@@ -131,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        console.log(`加载文档: ${docPath}`);
         const filePath = `data/docs/${docPath}.md`;
         
         fetch(filePath)
@@ -140,66 +147,78 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(markdown => {
                 try {
-                    // 确保FCL的扩展处理先于marked执行
-                    let processedMarkdown = markdown;
+                    console.log(`文档 ${docPath} 加载成功，内容长度: ${markdown.length}`);
                     
-                    // 首先处理自定义容器
-                    if (window.fcl && typeof fcl.processCustomContainers === 'function') {
-                        processedMarkdown = fcl.processCustomContainers(processedMarkdown);
+                    // 保存原始Markdown用于调试
+                    window.currentDocMarkdown = markdown;
+                    
+                    let html;
+                    
+                    try {
+                        // 使用fcl处理管道
+                        if (window.fcl && typeof fcl.processMarkdown === 'function') {
+                            console.log('使用FCL处理管道渲染Markdown');
+                            html = fcl.processMarkdown(markdown);
+                        } else {
+                            console.warn('FCL处理管道不可用，使用基本marked处理');
+                            html = marked.parse(markdown);
+                        }
+                        
+                        // 显示处理结果
+                        console.log('Markdown处理结果长度:', html.length);
+                    } catch (processError) {
+                        console.error('处理Markdown时出错:', processError);
+                        html = `<div class="error-message">
+                            <h3>处理Markdown时出错</h3>
+                            <p>${processError.message}</p>
+                        </div>`;
                     }
                     
-                    // 然后使用marked转换为HTML
-                    let html = marked.parse(processedMarkdown);
-                    
-                    // 最后处理代码组
-                    if (window.fcl && typeof fcl.processCodeGroups === 'function') {
-                        html = fcl.processCodeGroups(html);
-                    }
-                    
-                    // 更新文档容器
+                    // 更新DOM
                     docsContainer.innerHTML = `<article class="docs-article">${html}</article>`;
+                    console.log('DOM已更新');
                     
                     // 高亮代码块
                     if (window.hljs) {
                         document.querySelectorAll('.docs-article pre code').forEach(block => {
                             hljs.highlightElement(block);
                         });
+                        console.log('代码高亮处理完成');
                     }
                     
-                    // 初始化代码组和可折叠容器
+                    // 初始化交互元素
                     if (window.fcl) {
                         if (typeof fcl.initCodeGroups === 'function') {
+                            console.log('初始化代码组交互');
                             fcl.initCodeGroups();
                         }
                         if (typeof fcl.initCollapsibleContainers === 'function') {
+                            console.log('初始化折叠容器');
                             fcl.initCollapsibleContainers();
                         }
                     }
                     
-                    // 更新标题
+                    // 页面状态更新
                     updateDocTitle(docPath);
-                    
-                    // 滚动到顶部
                     docsContainer.scrollTop = 0;
                     window.scrollTo(0, 0);
+                    
                 } catch (error) {
-                    console.error('解析Markdown时出错:', error);
-                    docsContainer.innerHTML = `
-                        <div class="error-message">
-                            <h3>解析文档内容时出错</h3>
-                            <p>${error.message}</p>
-                            <p>请检查控制台以获取更多信息。</p>
-                        </div>`;
+                    console.error('处理文档时出错:', error);
+                    docsContainer.innerHTML = `<div class="error-message">
+                        <h3>处理文档内容时出错</h3>
+                        <p>${error.message}</p>
+                        <p>请检查控制台获取更多信息</p>
+                    </div>`;
                 }
             })
             .catch(error => {
-                console.error('加载文档时出错:', error);
-                docsContainer.innerHTML = `
-                    <div class="error-message">
-                        <h3>无法加载文档</h3>
-                        <p>${error.message}</p>
-                        <p>请确保文档路径正确，并刷新页面重试。</p>
-                    </div>`;
+                console.error('获取文档时出错:', error);
+                docsContainer.innerHTML = `<div class="error-message">
+                    <h3>无法加载文档</h3>
+                    <p>${error.message}</p>
+                    <p>请确保文档路径正确并刷新页面</p>
+                </div>`;
             });
     }
     
@@ -331,11 +350,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const mobileToggle = document.querySelector('.docs-nav-toggle');
         const docsNav = document.querySelector('.docs-nav');
         
+        // 输出调试信息
+        console.log('处理响应式布局', {
+            windowWidth: window.innerWidth,
+            mobileToggleExists: !!mobileToggle,
+            docsNavExists: !!docsNav
+        });
+        
         // 根据窗口宽度调整界面
         if (window.innerWidth <= 768) {
             // 移动视图 - 确保按钮显示
             if (mobileToggle) {
                 mobileToggle.style.display = 'block';
+            } else {
+                // 如果按钮不存在，尝试重新添加
+                setTimeout(addMobileNavToggle, 100);
             }
             
             // 初始化为关闭状态（除非已被用户打开）
@@ -351,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (docsNav) {
                 docsNav.style.display = 'block';
                 // 移除可能的active类防止样式冲突
-                docsNav.classList.remove('processed');
+                docsNav.classList.remove('active');
             }
         }
     }
@@ -372,29 +401,84 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.setAttribute('aria-label', '切换文档导航');
         
         // 将按钮插入到侧边栏的最前面
-        sidebarElement.insertBefore(toggleButton, sidebarElement.firstChild);
-        
-        // 添加点击事件
-        toggleButton.addEventListener('click', function() {
-            const docsNavElement = document.querySelector('.docs-nav');
-            docsNavElement.classList.toggle('active');
-            
-            // 更新显示状态
-            if (docsNavElement.classList.contains('active')) {
-                docsNavElement.style.display = 'block';
+        if (sidebarElement) {
+            // 将按钮放在搜索栏后面
+            const searchDiv = sidebarElement.querySelector('.docs-search');
+            if (searchDiv) {
+                searchDiv.insertAdjacentElement('afterend', toggleButton);
             } else {
-                docsNavElement.style.display = 'none';
+                sidebarElement.insertBefore(toggleButton, sidebarElement.firstChild);
             }
             
-            this.classList.toggle('active');
-        });
+            // 添加点击事件
+            toggleButton.addEventListener('click', function() {
+                const docsNavElement = document.querySelector('.docs-nav');
+                if (docsNavElement) {
+                    docsNavElement.classList.toggle('active');
+                    this.classList.toggle('active');
+                    
+                    // 更新显示状态 - 使用display属性会更可靠
+                    if (docsNavElement.classList.contains('active')) {
+                        docsNavElement.style.display = 'block';
+                    } else {
+                        docsNavElement.style.display = 'none';
+                    }
+                }
+            });
+            
+            // 在移动端默认收起导航
+            if (window.innerWidth <= 768) {
+                const docsNavElement = document.querySelector('.docs-nav');
+                if (docsNavElement) {
+                    docsNavElement.style.display = 'none';
+                }
+            }
+        }
+    }
+    
+    // 修复移动菜单初始化函数
+    function setupMobileMenuButton() {
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mainNav = document.querySelector('header nav');
         
-        // 立即应用响应式布局
-        handleResponsiveLayout();
+        if (mobileMenuButton && mainNav) {
+            console.log('找到移动菜单按钮和导航栏');
+            
+            // 确保在桌面视图中导航栏显示
+            if (window.innerWidth > 768) {
+                mainNav.style.display = 'block';
+            } else {
+                // 移动视图下默认隐藏导航
+                mainNav.style.display = 'none';
+            }
+            
+            // 添加点击事件
+            mobileMenuButton.addEventListener('click', function() {
+                console.log('菜单按钮被点击');
+                
+                // 切换导航显示状态
+                if (mainNav.style.display === 'none' || !mainNav.classList.contains('active')) {
+                    mainNav.style.display = 'block';
+                    mainNav.classList.add('active');
+                    this.classList.add('active');
+                } else {
+                    mainNav.style.display = 'none';
+                    mainNav.classList.remove('active');
+                    this.classList.remove('active');
+                }
+            });
+            
+            console.log('移动菜单按钮事件已绑定');
+        } else {
+            console.warn('未找到移动菜单按钮或导航栏元素');
+        }
     }
     
     // 初始加载文档数据
     loadDocsData();
+    
+    // 设置移动菜单按钮
+    setupMobileMenuButton();
     
     // 处理浏览器前进/后退按钮
     window.addEventListener('popstate', function() {
@@ -403,67 +487,17 @@ document.addEventListener('DOMContentLoaded', function() {
         highlightActiveDoc(currentDocPath);
     });
     
-    // 添加窗口大小调整监听器
-    window.addEventListener('resize', function() {
-        handleResponsiveLayout();
-    });
-
     // 确保在DOMContentLoaded事件中进行初始处理
     setTimeout(handleResponsiveLayout, 100);
-
-    // 调试辅助函数 - 在控制台中查看处理过程
-    window.debugFCLMarkdown = function(docPath) {
-        fetch(`data/docs/${docPath}.md`)
-            .then(response => response.text())
-            .then(markdown => {
-                console.group('FCL Markdown 调试');
-                console.log("原始Markdown:");
-                console.log(markdown);
-                
-                if (window.fcl) {
-                    console.log("\n处理自定义容器:");
-                    try {
-                        const containers = fcl.processCustomContainers(markdown);
-                        console.log(containers);
-                        
-                        console.log("\n处理代码组容器:");
-                        const codeGroups = fcl.processCodeGroupContainers(containers);
-                        console.log(codeGroups);
-                        
-                        console.log("\nMarked 转换后:");
-                        const html = marked.parse(codeGroups);
-                        console.log(html);
-                        
-                        console.log("\n代码组处理后:");
-                        const processed = fcl.processCodeGroups(html);
-                        console.log(processed);
-                    } catch (e) {
-                        console.error("处理过程中出错:", e);
-                    }
-                } else {
-                    console.warn("FCL 扩展对象未定义");
-                }
-                console.groupEnd();
-            })
-            .catch(err => console.error("获取文档出错", err));
-    };
-
-    // 添加调试按钮
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        const container = document.querySelector('.docs-content .container');
-        if (container) {
-            const debugBtn = document.createElement('button');
-            debugBtn.textContent = '调试当前文档';
-            debugBtn.className = 'debug-button';
-            debugBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:1000;padding:10px;background:#f06292;color:white;border:none;border-radius:4px;cursor:pointer;';
-            
-            debugBtn.addEventListener('click', function() {
-                const docPath = new URLSearchParams(window.location.search).get('doc') || 'getting-started/introduction';
-                window.debugFCLMarkdown(docPath);
-                alert(`正在调试文档: ${docPath}\n请查看控制台输出`);
-            });
-            
-            document.body.appendChild(debugBtn);
-        }
-    }
+    
+    // 在window.load事件后再次处理
+    window.addEventListener('load', handleResponsiveLayout);
+    
+    // 确保窗口调整大小时能够正确响应
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        // 使用防抖动处理
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(handleResponsiveLayout, 100);
+    });
 }); 

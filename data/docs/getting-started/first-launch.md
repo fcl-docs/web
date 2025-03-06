@@ -23,7 +23,7 @@
 
 应用程序首次启动时会执行以下配置：
 
-:::info
+:::info 信息
 初始配置可能需要几分钟时间，具体取决于您的设备性能和网络状况。
 :::
 
@@ -42,13 +42,13 @@ public void initialize() {
 您可以使用以下方式登录：
 
 :::code-group
-```java
+```java 微软账户
 // 使用微软账户登录
 MicrosoftAccount account = new MicrosoftAccount(username, password);
 account.login();
 ```
 
-```java
+```java 离线账户
 // 使用离线账户
 OfflineAccount account = new OfflineAccount(username);
 account.login();

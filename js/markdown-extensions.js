@@ -19,49 +19,73 @@ const fcl = {
     codeEnd: /^:::[ ]*$/
   },
   
-  // 处理自定义容器
+  // 重写自定义容器处理函数
   processCustomContainers: function(markdown) {
-    // 更准确的容器正则表达式 - 注意前后的换行匹配
-    const containerPattern = /^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)\n:::\s*$/gm;
+    // 更精确的非贪婪匹配正则表达式
+    const containerPattern = /^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)(?:\n:::)(?:\s*)$/gm;
     
-    // 处理自定义容器，将其转换为HTML
-    return markdown.replace(containerPattern, function(match, spacing, type, title, content) {
-        console.log(`找到${type}容器，标题: "${title || '无'}", 内容长度: ${content.length}`);
+    // 修复容器嵌套问题 - 需要一个特殊的标记替换策略
+    let lastMatchEnd = 0;
+    let result = '';
+    let match;
+    
+    // 首先保存所有匹配位置
+    const matches = [];
+    while ((match = containerPattern.exec(markdown)) !== null) {
+        matches.push({
+            index: match.index,
+            end: match.index + match[0].length,
+            type: match[2],
+            title: match[3] || this.getDefaultTitle(match[2]),
+            content: match[4]
+        });
+    }
+    
+    // 处理匹配，处理嵌套情况
+    if (matches.length === 0) {
+        return markdown;
+    }
+    
+    // 处理匹配
+    let lastIndex = 0;
+    for (const m of matches) {
+        // 添加当前匹配前的内容
+        result += markdown.substring(lastIndex, m.index);
         
-        title = title || getDefaultTitle(type);
+        // 对容器内容进行预处理
+        // 关键修改：提前处理容器内容中的Markdown语法
+        let processedContent = m.content;
         
-        let processedContent = content.trim();
-        // 递归处理嵌套容器
-        if (containerPattern.test(processedContent)) {
-            containerPattern.lastIndex = 0; // 重置正则表达式索引
-            processedContent = fcl.processCustomContainers(processedContent);
-        }
-        
-        // 特殊处理details容器
-        if (type === 'details') {
-            return `<details class="custom-container ${type}">
-                <summary class="custom-container-title">${title}</summary>
+        // 不再递归处理嵌套容器 - 只在最外层处理
+        if (m.type === 'details') {
+            result += `<details class="custom-container ${m.type}">
+                <summary class="custom-container-title">${m.title}</summary>
                 <div class="custom-container-content">${processedContent}</div>
             </details>`;
+        } else {
+            result += `<div class="custom-container ${m.type}">
+                <p class="custom-container-title">${m.title}</p>
+                <div class="custom-container-content">${processedContent}</div>
+            </div>`;
         }
         
-        // 其他容器
-        return `<div class="custom-container ${type}">
-            <p class="custom-container-title">${title}</p>
-            <div class="custom-container-content">${processedContent}</div>
-        </div>`;
-    });
+        lastIndex = m.end;
+    }
     
-    // 为不同类型的容器提供默认标题
-    function getDefaultTitle(type) {
-        switch (type) {
-            case 'tip': return '提示';
-            case 'warning': return '警告';
-            case 'danger': return '危险';
-            case 'info': return '信息';
-            case 'details': return '详细信息';
-            default: return '';
-        }
+    // 添加剩余内容
+    result += markdown.substring(lastIndex);
+    return result;
+  },
+  
+  // 添加辅助方法
+  getDefaultTitle: function(type) {
+    switch (type) {
+        case 'tip': return '提示';
+        case 'warning': return '警告';
+        case 'danger': return '危险';
+        case 'info': return '信息';
+        case 'details': return '详细信息';
+        default: return '';
     }
   },
   
@@ -217,22 +241,22 @@ const fcl = {
     });
   },
   
-  // 添加特殊处理代码组容器的函数
+  // 完全重写代码组容器处理函数
   processCodeGroupContainers: function(markdown) {
-    // 处理代码组容器
-    const codeGroupPattern = /^:::code-group\s*\n([\s\S]*?)\n:::\s*$/gm;
+    // 使用更精确的正则表达式
+    const codeGroupPattern = /^:::code-group\s*$([\s\S]*?)^:::\s*$/gm;
     
     return markdown.replace(codeGroupPattern, function(match, content) {
-        // 将内容转换为代码组HTML
+        // 提取代码块
         const codeBlocks = [];
-        let codeBlockPattern = /^```(\w+)(.*?)\n([\s\S]*?)```\s*$/gm;
-        let blockMatch;
+        const codeBlockRegex = /^```(\w+)(?:\s+(.+?))?\s*\n([\s\S]*?)```/gm;
+        let codeMatch;
         
-        while ((blockMatch = codeBlockPattern.exec(content)) !== null) {
+        while ((codeMatch = codeBlockRegex.exec(content)) !== null) {
             codeBlocks.push({
-                lang: blockMatch[1],
-                title: blockMatch[2].trim() || blockMatch[1],
-                content: blockMatch[3]
+                lang: codeMatch[1],
+                title: codeMatch[2] || codeMatch[1],
+                content: codeMatch[3]
             });
         }
         
@@ -240,14 +264,16 @@ const fcl = {
             return match; // 如果没有找到代码块，保持原样
         }
         
-        // 构建代码组HTML
+        // 构建HTML
         let tabs = '';
         let contents = '';
         
         codeBlocks.forEach((block, index) => {
-            const active = index === 0 ? ' active' : '';
-            tabs += `<button class="code-group-tab${active}" data-tab="${index}">${block.title}</button>`;
-            contents += `<div class="code-group-content${active}" data-tab="${index}"><pre><code class="language-${block.lang}">${block.content}</code></pre></div>`;
+            const activeClass = index === 0 ? ' active' : '';
+            tabs += `<button class="code-group-tab${activeClass}" data-tab="${index}">${block.title}</button>`;
+            contents += `<div class="code-group-content${activeClass}" data-tab="${index}">
+                <pre><code class="language-${block.lang}">${block.content}</code></pre>
+            </div>`;
         });
         
         return `<div class="code-group">
@@ -257,27 +283,135 @@ const fcl = {
     });
   },
   
+  // 添加专门的代码组检测函数
+  detectCodeGroups: function(markdown) {
+    console.log("开始检测代码组...");
+    
+    // 检测代码组容器
+    const containerPattern = /:::code-group[\s\S]*?\n([\s\S]*?)\n:::/g;
+    const containerMatches = markdown.match(containerPattern);
+    
+    if (containerMatches) {
+        console.log(`找到 ${containerMatches.length} 个代码组容器`);
+        containerMatches.forEach((match, i) => {
+            console.log(`代码组 ${i+1}:\n${match.substring(0, 100)}...`);
+        });
+    } else {
+        console.log("未找到代码组容器");
+    }
+    
+    // 检测连续的代码块（可能是代码组）
+    const codeBlockPattern = /```(\w+)[\s\S]*?```\s*```(\w+)/g;
+    const codeBlockMatches = markdown.match(codeBlockPattern);
+    
+    if (codeBlockMatches) {
+        console.log(`找到 ${codeBlockMatches.length} 个可能的连续代码块组`);
+        codeBlockMatches.forEach((match, i) => {
+            console.log(`连续代码块 ${i+1}:\n${match.substring(0, 100)}...`);
+        });
+    } else {
+        console.log("未找到连续代码块");
+    }
+    
+    // 保存未处理的原始Markdown
+    window.originalMarkdown = markdown;
+    console.log("检测完成，原始Markdown已保存到window.originalMarkdown");
+  },
+  
   // 初始化可折叠容器
   initCollapsibleContainers: function() {
     // details 容器已经有原生折叠功能，无需添加JavaScript
     console.log('已初始化可折叠容器');
   },
   
-  // 设置完整的处理管道
+  // 重构处理管道以确保标题正确渲染
   processMarkdown: function(markdown) {
-    // 1. 处理自定义容器
-    let result = this.processCustomContainers(markdown);
-    
-    // 2. 处理代码组容器
-    result = this.processCodeGroupContainers(result);
-    
-    // 3. 转换为HTML
-    result = marked.parse(result);
-    
-    // 4. 处理代码组
-    result = this.processCodeGroups(result);
-    
-    return result;
+    try {
+        // 1. 先处理特殊容器
+        let processedMarkdown = markdown;
+        
+        // 找出所有代码组并替换为占位符
+        const codeGroups = [];
+        processedMarkdown = processedMarkdown.replace(/^:::code-group\s*$([\s\S]*?)^:::\s*$/gm, 
+            function(match, content) {
+                const id = `CODE_GROUP_${codeGroups.length}`;
+                codeGroups.push(match);
+                return id;
+            });
+        
+        // 找出所有自定义容器并替换为占位符
+        const containers = [];
+        processedMarkdown = processedMarkdown.replace(/^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)(?:\n:::)(?:\s*)$/gm,
+            function(match, spacing, type, title, content) {
+                const id = `CONTAINER_${containers.length}`;
+                containers.push({
+                    match: match,
+                    type: type,
+                    title: title || this.getDefaultTitle(type),
+                    content: content
+                });
+                return id;
+            }.bind(this));
+        
+        // 2. 使用marked解析基本Markdown
+        let html = marked.parse(processedMarkdown);
+        
+        // 3. 恢复容器并进行处理
+        // 先处理代码组
+        codeGroups.forEach((group, i) => {
+            const id = `CODE_GROUP_${i}`;
+            const processed = this.processCodeGroupContainers(group);
+            html = html.replace(id, processed);
+        });
+        
+        // 再处理自定义容器，关键改动：先处理容器内容
+        containers.forEach((container, i) => {
+            const id = `CONTAINER_${i}`;
+            
+            // 先用marked处理容器内容
+            let processedContent = marked.parse(container.content);
+            
+            // 移除marked生成的外层<p>标签（如果有的话）
+            processedContent = processedContent.replace(/^<p>([\s\S]*)<\/p>$/, '$1');
+            
+            // 根据容器类型生成HTML
+            let containerHtml;
+            if (container.type === 'details') {
+                containerHtml = `<details class="custom-container ${container.type}">
+                    <summary class="custom-container-title">${container.title}</summary>
+                    <div class="custom-container-content">${processedContent}</div>
+                </details>`;
+            } else {
+                containerHtml = `<div class="custom-container ${container.type}">
+                    <p class="custom-container-title">${container.title}</p>
+                    <div class="custom-container-content">${processedContent}</div>
+                </div>`;
+            }
+            
+            html = html.replace(id, containerHtml);
+        });
+        
+        // 4. 处理连续代码块
+        html = this.processCodeGroups(html);
+        
+        return html;
+    } catch (err) {
+        console.error("处理Markdown时出错:", err);
+        return `<div class="error-message">
+            <h3>处理Markdown出错</h3>
+            <p>${err.message}</p>
+        </div>`;
+    }
+  },
+  
+  // 移除调试函数
+  debugHeadings: function() {
+    // ... 调试函数内容 ...
+  },
+  
+  // 移除容器调试函数
+  debugContainers: function(markdown) {
+    // ... 调试函数内容 ...
   }
 };
 
