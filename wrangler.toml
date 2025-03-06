@@ -1,13 +1,14 @@
-# 基本配置
+# Cloudflare Pages 配置
 name = "fcl-docs"
-type = "webpack"
-route = ''
-zone_id = ''
-account_id = ''
-workers_dev = true
 
-# 构建设置
+# Pages 特定配置
 [build]
 command = "echo '静态网站无需构建'"
-upload.format = "directory"
-upload.dir = "." 
+
+[build.upload]
+format = "directory"
+dir = "."
+
+[site]
+bucket = "."
+entry-point = "." 

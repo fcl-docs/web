@@ -1,1 +1,9 @@
-
+{
+  "name": "fcl-docs",
+  "version": "1.0.0",
+  "description": "Fold Craft Launcher 文档网站",
+  "private": true,
+  "scripts": {
+    "build": "echo '静态网站构建完成'"
+  }
+}
