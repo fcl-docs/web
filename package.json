@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "scripts": {
+   "dev": "node build.js"
+}
+}
