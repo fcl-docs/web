@@ -1,0 +1,83 @@
+{
+  "categories": [
+    {
+      "id": "getting-started",
+      "title": "开始使用",
+      "docs": [
+        {
+          "id": "introduction",
+          "title": "FCL简介",
+          "path": "getting-started/introduction"
+        },
+        {
+          "id": "installation",
+          "title": "安装指南",
+          "path": "getting-started/installation"
+        },
+        {
+          "id": "first-launch",
+          "title": "首次启动",
+          "path": "getting-started/first-launch"
+        }
+      ]
+    },
+    {
+      "id": "user-guide",
+      "title": "使用指南",
+      "docs": [
+        {
+          "id": "accounts",
+          "title": "账号管理",
+          "path": "user-guide/accounts"
+        },
+        {
+          "id": "game-management",
+          "title": "游戏管理",
+          "path": "user-guide/game-management"
+        },
+        {
+          "id": "controller-setup",
+          "title": "控制器设置",
+          "path": "user-guide/controller-setup"
+        }
+      ]
+    },
+    {
+      "id": "plugins",
+      "title": "插件系统",
+      "docs": [
+        {
+          "id": "plugins-overview",
+          "title": "插件概述",
+          "path": "plugins/overview"
+        },
+        {
+          "id": "renderer-plugins",
+          "title": "渲染器插件",
+          "path": "plugins/renderer-plugins"
+        },
+        {
+          "id": "driver-plugins",
+          "title": "驱动插件",
+          "path": "plugins/driver-plugins"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "高级功能",
+      "docs": [
+        {
+          "id": "jvm-args",
+          "title": "JVM参数设置",
+          "path": "advanced/jvm-args"
+        },
+        {
+          "id": "troubleshooting",
+          "title": "常见问题排查",
+          "path": "advanced/troubleshooting"
+        }
+      ]
+    }
+  ]
+} 

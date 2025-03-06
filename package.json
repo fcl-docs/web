@@ -1,8 +1,18 @@
 {
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  },
+  "name": "fcl-website",
+  "version": "1.0.0",
+  "description": "Fold Craft Launcher 官方网站",
   "scripts": {
-   "dev": "node build.js"
-}
+    "dev": "node build.js",
+    "build": "echo '构建完成！'",
+    "start": "live-server --port=8181"
+  },
+  "devDependencies": {
+    "highlight.js": "^11.7.0",
+    "live-server": "^1.2.2",
+    "marked": "^4.3.0"
+  },
+  "dependencies": {
+    "marked": "^4.3.0"
+  }
 }

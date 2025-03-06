@@ -1,0 +1,308 @@
+/* VitePress风格的Markdown扩展样式 */
+
+/* 自定义容器样式 */
+.custom-container {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 6px;
+    position: relative;
+}
+
+.custom-container-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+/* 提示容器 */
+.custom-container.tip {
+    background-color: rgba(221, 244, 255, 0.5);
+    border-left: 4px solid #3b8af3;
+}
+
+.custom-container.tip .custom-container-title {
+    color: #3b8af3;
+}
+
+.custom-container.tip::before {
+    content: "💡";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+}
+
+/* 警告容器 */
+.custom-container.warning {
+    background-color: rgba(255, 244, 222, 0.5);
+    border-left: 4px solid #f3bd3b;
+}
+
+.custom-container.warning .custom-container-title {
+    color: #b88917;
+}
+
+.custom-container.warning::before {
+    content: "⚠️";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+}
+
+/* 危险容器 */
+.custom-container.danger {
+    background-color: rgba(255, 227, 227, 0.5);
+    border-left: 4px solid #f35151;
+}
+
+.custom-container.danger .custom-container-title {
+    color: #c53030;
+}
+
+.custom-container.danger::before {
+    content: "🚨";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+}
+
+/* 信息容器 */
+.custom-container.info {
+    background-color: rgba(223, 235, 255, 0.5);
+    border-left: 4px solid #6a8eda;
+}
+
+.custom-container.info .custom-container-title {
+    color: #4a69bd;
+}
+
+.custom-container.info::before {
+    content: "ℹ️";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+}
+
+/* 详情容器 */
+.custom-container.details {
+    background-color: rgba(243, 243, 243, 0.5);
+    border-left: 4px solid #8e8e8e;
+}
+
+.custom-container.details summary {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+
+.custom-container.details summary:hover {
+    color: var(--primary-color);
+}
+
+.custom-container.details[open] summary {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+/* 代码组样式 */
+.code-group {
+    margin: 1rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.code-group-tabs {
+    display: flex;
+    background-color: #e8e8e8;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.code-group-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.code-group-tabs::-webkit-scrollbar-track {
+    background: #e8e8e8;
+}
+
+.code-group-tabs::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    border-radius: 2px;
+}
+
+.code-group-tab {
+    padding: 8px 12px;
+    cursor: pointer;
+    background: #f1f1f1;
+    border: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 2px;
+    transition: background 0.2s;
+}
+
+.code-group-tab:hover {
+    background: #e0e0e0;
+}
+
+.code-group-tab.active {
+    background: #f6f8fa;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.code-group-content {
+    display: none;
+    margin: 0;
+}
+
+.code-group-content.active {
+    display: block;
+}
+
+.code-group-content pre {
+    margin: 0;
+    border-radius: 0;
+}
+
+/* 代码块增强 */
+.docs-article pre {
+    position: relative;
+}
+
+.docs-article pre::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #999;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    text-transform: uppercase;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .custom-container {
+        padding: 0.75rem;
+        margin: 0.75rem 0;
+    }
+    
+    .custom-container::before {
+        display: none;
+    }
+    
+    .code-group-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+    }
+    
+    .code-group-tab {
+        padding: 6px 10px;
+        font-size: 0.8em;
+        white-space: nowrap;
+    }
+    
+    /* 代码块内容在移动端更易阅读 */
+    .docs-article pre {
+        font-size: 0.8rem;
+    }
+    
+    .docs-article pre code {
+        padding: 0.75rem !important;
+    }
+    
+    /* 修复移动端代码溢出 */
+    .docs-article pre {
+        max-width: calc(100vw - 50px);
+    }
+    
+    /* 调整文章内容边距 */
+    .docs-article {
+        padding: 10px 0;
+    }
+    
+    /* 优化嵌套列表在移动端的显示 */
+    .docs-article ul ul, 
+    .docs-article ol ol,
+    .docs-article ul ol,
+    .docs-article ol ul {
+        padding-left: 1.2rem;
+    }
+}
+
+/* 错误消息样式 */
+.error-message {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #fff0f0;
+    border-left: 4px solid #e74c3c;
+    border-radius: 6px;
+}
+
+.error-message h3 {
+    color: #c0392b;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.error-message p {
+    margin-bottom: 0.5rem;
+}
+
+/* 代码组中的代码块样式 */
+.code-group pre {
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.code-group code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
+/* 改进容器内容样式 */
+.custom-container-content {
+    line-height: 1.6;
+}
+
+.custom-container-content p:first-child {
+    margin-top: 0;
+}
+
+.custom-container-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* 修复代码组内容显示 */
+.code-group-contents {
+    background-color: #f6f8fa;
+}
+
+/* 确保代码组内的代码显示完整 */
+.code-group .code-group-content {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* 容器内链接样式优化 */
+.custom-container-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.custom-container-content a:hover {
+    border-color: var(--primary-color);
+} 

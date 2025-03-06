@@ -78,3 +78,134 @@
 .version-info h3 {
     color: var(--primary-color);
     margin-bottom: 20px;
+}
+
+/* 继续下载页面的其他样式 */
+.version-info p {
+    margin-bottom: 10px;
+}
+
+.download-source {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.source-selector {
+    margin-top: 15px;
+}
+
+.source-selector select {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: white;
+    font-size: 16px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+    background-size: 12px auto;
+}
+
+.download-button {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.download-button .btn {
+    font-size: 18px;
+    padding: 15px 40px;
+}
+
+/* 系统要求区域样式 */
+.system-requirements {
+    background-color: #f5f5f5;
+}
+
+.requirements-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.requirement-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+}
+
+.requirement-item h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.requirement-item ul li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.requirement-item ul li:before {
+    content: "✓";
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+}
+
+/* 错误消息样式 */
+.error-message {
+    background-color: #fff6f6;
+    color: #db2828;
+    border: 1px solid #db2828;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+    font-weight: 500;
+}
+
+/* 更新版本内容样式以匹配新结构 */
+#version-contents {
+    width: 100%;
+}
+
+/* 加强下载页面在移动端的显示 */
+@media (max-width: 768px) {
+    /* 已有的样式 */
+    
+    .download-hero h2 {
+        font-size: 2rem;
+    }
+    
+    .download-hero p {
+        font-size: 1rem;
+    }
+    
+    .guide-steps {
+        grid-template-columns: 1fr;
+    }
+    
+    .requirement-item {
+        padding: 15px;
+    }
+    
+    .version-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+        display: flex;
+        justify-content: flex-start;
+    }
+    
+    .version-tab {
+        white-space: nowrap;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}

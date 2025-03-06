@@ -1,0 +1,57 @@
+{
+  "plugins": [
+    {
+      "id": 1,
+      "title": "旧版holy",
+      "description": "可以游玩1.16.5的机械动力模组",
+      "category": "renderer",
+      "version": "1.0",
+      "type": "渲染器",
+      "downloads": 15642,
+      "image": "images/plugins/holy.jpg",
+      "directDownloadUrl": "https://fcl-cdn.example.com/plugins/holy_v1.0.apk",
+      "alternativeDownloadUrl": "https://123pan.com/s/fcl-plugins/1"
+    },
+    {
+      "id": 2,
+      "title": "ANGLE",
+      "description": "ANGLE渲染器插件",
+      "category": "renderer",
+      "version": "1.0",
+      "type": "渲染器",
+      "downloads": 12458,
+      "image": "images/plugins/angle.jpg",
+      "directDownloadUrl": "https://fcl-cdn.example.com/plugins/angle_v1.0.apk",
+      "alternativeDownloadUrl": "https://123pan.com/s/fcl-plugins/2"
+    },
+    {
+      "id": 3,
+      "title": "Turnip",
+      "description": "Turnip驱动插件",
+      "category": "driver",
+      "version": "23.2.0",
+      "type": "驱动",
+      "downloads": 9876,
+      "image": "images/plugins/turnip.jpg",
+      "directDownloadUrl": "https://fcl-cdn.example.com/plugins/turnip_v23.2.0.apk",
+      "alternativeDownloadUrl": "https://123pan.com/s/fcl-plugins/3"
+    },
+    {
+      "id": 4,
+      "title": "Turnip",
+      "description": "Turnip驱动插件(新版)",
+      "category": "driver",
+      "version": "24.3.2",
+      "type": "驱动",
+      "downloads": 8542,
+      "image": "images/plugins/turnip_new.jpg",
+      "directDownloadUrl": "https://fcl-cdn.example.com/plugins/turnip_v24.3.2.apk",
+      "alternativeDownloadUrl": "https://123pan.com/s/fcl-plugins/4"
+    }
+  ],
+  "categories": [
+    {"id": "all", "name": "全部"},
+    {"id": "renderer", "name": "渲染器"},
+    {"id": "driver", "name": "驱动"}
+  ]
+} 

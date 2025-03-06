@@ -1,0 +1,91 @@
+{
+  "versions": {
+    "all": {
+      "title": "通用版",
+      "description": "支持大多数设备",
+      "version": "1.2.1.1",
+      "date": "2025-03-06",
+      "size": "约150MB",
+      "compatibility": "大多数Android设备"
+    },
+    "arm64": {
+      "title": "ARM64版",
+      "description": "适用于ARM64架构设备",
+      "version": "1.2.1.1",
+      "date": "2025-03-06",
+      "size": "约145MB",
+      "compatibility": "搭载ARM64架构的设备"
+    },
+    "x86": {
+      "title": "X86版",
+      "description": "适用于X86架构设备",
+      "version": "1.2.1.1",
+      "date": "2025-03-06",
+      "size": "约140MB",
+      "compatibility": "搭载X86架构的设备"
+    }
+  },
+  "sources": {
+    "github": {
+      "name": "GitHub (国际)",
+      "urls": {
+        "all": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-all.apk",
+        "arm64": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-arm64.apk",
+        "x86": "https://github.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-x86.apk"
+      }
+    },
+    "gitee": {
+      "name": "Gitee (中国大陆)",
+      "urls": {
+        "all": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-all.apk",
+        "arm64": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-arm64.apk",
+        "x86": "https://gitee.com/FCL-Team/FoldCraftLauncher/releases/download/v1.2.1.1/FCL-v1.2.1.1-x86.apk"
+      }
+    },
+    "aliyun": {
+      "name": "阿里云 (中国大陆)",
+      "urls": {
+        "all": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-all.apk",
+        "arm64": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-arm64.apk",
+        "x86": "https://fcl-download.oss-cn-hangzhou.aliyuncs.com/FCL-v1.2.1.1-x86.apk"
+      }
+    },
+    "tencent": {
+      "name": "腾讯云 (中国大陆)",
+      "urls": {
+        "all": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-all.apk",
+        "arm64": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-arm64.apk",
+        "x86": "https://fcl-1234567890.cos.ap-shanghai.myqcloud.com/FCL-v1.2.1.1-x86.apk"
+      }
+    }
+  },
+  "changelog": [
+    {
+      "version": "1.2.1.1",
+      "date": "2025-03-06",
+      "changes": [
+        "修复了若干崩溃问题",
+        "改进了Java 21的支持",
+        "更新了渲染器性能"
+      ]
+    },
+    {
+      "version": "1.2.1.0",
+      "date": "2025-02-15",
+      "changes": [
+        "增加了对Minecraft 1.21.2的支持",
+        "改进了zink渲染器",
+        "修复了内存分配问题"
+      ]
+    },
+    {
+      "version": "1.2.0.0",
+      "date": "2025-01-10",
+      "changes": [
+        "新增Java 21支持",
+        "更新了UI设计",
+        "改进了虚拟鼠标功能"
+      ]
+    }
+  ]
+} 

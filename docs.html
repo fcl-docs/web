@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>文档 - Fold Craft Launcher</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/docs.css">
+    <link rel="stylesheet" href="css/markdown-extensions.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Fold Craft Launcher</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="download.html">启动器下载</a></li>
+                    <li><a href="plugins.html">插件下载</a></li>
+                    <li><a href="docs.html" class="active">文档</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="docs-hero">
+        <div class="container">
+            <h2>FCL文档中心</h2>
+            <p>获取有关Fold Craft Launcher的详细使用说明和帮助</p>
+        </div>
+    </section>
+
+    <section class="docs-content">
+        <div class="container">
+            <div class="docs-layout">
+                <div class="docs-sidebar">
+                    <div class="docs-search">
+                        <input type="text" id="docs-search-input" placeholder="搜索文档...">
+                    </div>
+                    <div class="docs-nav" id="docs-nav">
+                        <!-- 文档导航由JavaScript动态生成 -->
+                    </div>
+                </div>
+                <div class="docs-main">
+                    <div id="docs-container">
+                        <!-- 文档内容由JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Fold Craft Launcher</h3>
+                    <p>在Android上运行Minecraft: Java Edition的开源启动器</p>
+                </div>
+                <div class="footer-links">
+                    <h4>链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="download.html">启动器下载</a></li>
+                        <li><a href="plugins.html">插件下载</a></li>
+                        <li><a href="docs.html">文档</a></li>
+                        <li><a href="https://github.com/FCL-Team/FoldCraftLauncher">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 FCL-Team. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <script src="js/markdown-extensions.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/docs.js"></script>
+    <script>
+        // 确保 hljs 正确初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 如果 hljs 已加载，初始化它
+            if (window.hljs) {
+                console.log("初始化 highlight.js");
+                hljs.configure({
+                    ignoreUnescapedHTML: true,
+                    throwUnescapedHTML: false
+                });
+                
+                // 防止marked使用hljs时出错
+                if (!hljs.getLanguage) {
+                    hljs.getLanguage = function(lang) {
+                        try {
+                            return hljs.listLanguages().includes(lang);
+                        } catch (e) {
+                            return false;
+                        }
+                    };
+                }
+            } else {
+                console.warn("highlight.js 未加载");
+            }
+        });
+    </script>
+    <script>
+        // 调试辅助函数
+        window.debugMarkdown = function(docPath) {
+            fetch(`data/docs/${docPath}.md`)
+                .then(response => response.text())
+                .then(markdown => {
+                    console.log("原始Markdown:");
+                    console.log(markdown);
+                    
+                    if (typeof fcl !== 'undefined') {
+                        const processed = fcl.processCustomContainers(markdown);
+                        console.log("处理后Markdown:");
+                        console.log(processed);
+                    }
+                })
+                .catch(err => console.error("获取文档出错", err));
+        };
+        
+        // 在页面加载后自动调试当前文档
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const docPath = new URLSearchParams(window.location.search).get('doc') || 'getting-started/introduction';
+                window.debugMarkdown(docPath);
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
