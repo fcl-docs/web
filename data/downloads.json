@@ -47,6 +47,7 @@
       "urls": {
         "all": "https://alist.8mi.tech/FCL",
         "arm64": "https://alist.8mi.tech/FCL",
+        "x86": "https://alist.8mi.tech/FCL"
       }
     },
     "cf": {
