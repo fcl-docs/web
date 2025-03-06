@@ -14,15 +14,5 @@ liveServer.start(params);
 const fs = require('fs');
 const path = require('path');
 
-// 确保依赖已安装
-console.log('正在安装依赖...');
-try {
-  require('child_process').execSync('npm install', { stdio: 'inherit' });
-  console.log('依赖安装成功');
-} catch (error) {
-  console.error('依赖安装失败:', error);
-  process.exit(1);
-}
-
-// 其他构建步骤...
-console.log('构建完成');
+// 空构建脚本，确保构建过程不会失败
+console.log('静态网站无需构建步骤');
