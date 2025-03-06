@@ -136,11 +136,11 @@
 <body>
     <header>
         <div class="container">
-            <button class="mobile-menu-button" aria-label="菜单">☰</button>
             <div class="logo">
                 <img src="images/fcl-logo.png" alt="FCL Logo">
                 <h1>Fold Craft Launcher</h1>
             </div>
+            <button class="mobile-menu-button" aria-label="菜单">☰</button>
             <nav>
                 <ul>
                     <li><a href="index.html">首页</a></li>
@@ -227,7 +227,6 @@
     <script>
         // 文档页面专用菜单处理脚本
         document.addEventListener('DOMContentLoaded', function() {
-            // 获取必要的元素
             const mobileMenuButton = document.querySelector('.mobile-menu-button');
             const headerNav = document.querySelector('header nav');
             
@@ -246,33 +245,28 @@
                 });
             }
             
-            // 重新绑定菜单按钮点击事件
+            // 为菜单按钮添加点击事件
             if (mobileMenuButton) {
-                // 移除可能存在的旧事件监听器
+                // 重置事件监听器
                 const newButton = mobileMenuButton.cloneNode(true);
                 mobileMenuButton.parentNode.replaceChild(newButton, mobileMenuButton);
                 
-                // 添加新的事件监听器
                 newButton.addEventListener('click', function(e) {
-                    e.stopPropagation(); // 阻止事件冒泡
+                    e.stopPropagation();
                     
                     const overlay = document.querySelector('.menu-overlay');
                     
                     if (headerNav.classList.contains('active')) {
-                        // 关闭菜单
                         headerNav.classList.remove('active');
                         overlay.style.display = 'none';
                         document.body.style.overflow = '';
                     } else {
-                        // 打开菜单
                         headerNav.classList.add('active');
                         overlay.style.display = 'block';
                         document.body.style.overflow = 'hidden';
                     }
                 });
             }
-            
-            console.log('文档页菜单事件处理器已初始化');
         });
     </script>
 </body>

@@ -116,13 +116,13 @@ header .container {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    position: relative;
 }
 
 /* LOGO样式 */
 .logo {
     display: flex;
     align-items: center;
+    margin-right: auto;
 }
 
 .logo img {
@@ -221,7 +221,7 @@ header nav ul li a.active::after {
     border-radius: 1px;
 }
 
-/* 隐藏移动菜单按钮(桌面视图) */
+/* 更新菜单按钮样式 */
 .mobile-menu-button {
     display: none;
     background: none;
@@ -229,18 +229,24 @@ header nav ul li a.active::after {
     color: white;
     font-size: 24px;
     cursor: pointer;
+    padding: 5px 10px;
+    margin-left: 15px;
+    order: 2;
 }
 
 /* 移动端样式 - 完全重写 */
 @media (max-width: 768px) {
-    /* 显示移动菜单按钮 */
     .mobile-menu-button {
         display: block;
-        padding: 5px 10px;
     }
     
-    .mobile-menu-button.active {
-        transform: rotate(90deg);
+    header .container {
+        flex-wrap: wrap;
+    }
+    
+    header nav {
+        order: 3;
+        width: 100%;
     }
     
     /* 头部容器调整 */

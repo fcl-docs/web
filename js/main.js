@@ -31,38 +31,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 修改菜单按钮点击事件
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
+    if (mobileMenuButton && nav) {
+        mobileMenuButton.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            this.classList.toggle('active');
             
-            const overlay = document.querySelector('.overlay');
+            // 处理遮罩层
+            let overlay = document.querySelector('.overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'overlay';
+                document.body.appendChild(overlay);
+                
+                overlay.addEventListener('click', function() {
+                    nav.classList.remove('active');
+                    mobileMenuButton.classList.remove('active');
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
             
             if (nav.classList.contains('active')) {
-                // 关闭菜单 - 先淡出遮罩
-                if (overlay) overlay.style.opacity = '0';
-                
-                // 短暂延迟后移除类
-                setTimeout(() => {
-                    nav.classList.remove('active');
-                    this.classList.remove('active');
-                    if (overlay) overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }, 280);
-                
-            } else {
-                // 打开菜单 - 先添加活动类
-                nav.classList.add('active');
-                this.classList.add('active');
-                
-                // 然后激活遮罩层
-                if (overlay) {
-                    overlay.classList.add('active');
-                    setTimeout(() => {
-                        overlay.style.opacity = '1';
-                    }, 20);
-                }
-                
+                overlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
     }
