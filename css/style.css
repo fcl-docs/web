@@ -126,26 +126,42 @@ header .container {
 }
 
 .logo img {
-    height: 40px;
+    height: 28px;
     width: auto;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .logo h1 {
     margin: 0;
     padding: 0;
-    font-size: 24px;
+    font-size: 22px;
     color: white;
+    line-height: 1.2;
 }
 
-/* 移动设备上调整Logo大小 */
+/* 移动设备上进一步调整Logo大小 */
 @media (max-width: 768px) {
     .logo img {
-        height: 32px;
+        height: 24px;
     }
     
     .logo h1 {
-        font-size: 20px;
+        font-size: 18px;
+    }
+    
+    /* 确保在小屏幕上更紧凑 */
+    header .container {
+        padding: 10px 15px;
+    }
+}
+
+/* 超小屏幕设备上可能需要隐藏文字只显示图标 */
+@media (max-width: 360px) {
+    .logo h1 {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
