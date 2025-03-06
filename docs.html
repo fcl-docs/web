@@ -48,24 +48,24 @@
         
         @media (max-width: 768px) {
             header nav {
-                display: none !important;
+                display: none !important; /* 初始隐藏 */
             }
             
             header nav.active {
-                position: relative;
+                position: fixed !important; /* 改为fixed定位 */
                 z-index: 1000;
                 display: block !important;
+                top: 0;
+                left: 0;
+                width: 80% !important;
+                height: 100vh !important;
+                background-color: var(--primary-color) !important;
+                padding: 20px !important;
+                overflow-y: auto;
             }
             
             .overlay {
                 z-index: 90;
-            }
-            
-            /* 禁用遮罩层对菜单的影响 */
-            .overlay.active + nav,
-            .overlay.active ~ nav {
-                opacity: 1 !important;
-                display: block !important;
             }
         }
     </style>

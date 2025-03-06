@@ -44,10 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 加载文档数据
     function loadDocsData() {
         fetch('data/docs.json')
-            .then(response => {
-                if (!response.ok) throw new Error('网络响应不正常');
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 docsData = data;
                 renderDocsNav(data);
@@ -58,16 +55,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 强制处理响应式布局
                 handleResponsiveLayout();
                 
-                // 获取URL中的文档路径或使用默认值
+                // 获取URL中的文档路径
                 currentDocPath = getDocPathFromUrl();
-                loadDoc(currentDocPath);
                 
-                // 高亮当前文档链接
-                highlightActiveDoc(currentDocPath);
+                // 如果URL中没有指定文档路径，则加载第一个类别的第一篇文档
+                if (!currentDocPath && data.categories && data.categories.length > 0) {
+                    const firstCategory = data.categories[0];
+                    if (firstCategory.docs && firstCategory.docs.length > 0) {
+                        currentDocPath = firstCategory.docs[0].path;
+                        // 更新URL但不触发页面刷新
+                        const newUrl = window.location.pathname + '?doc=' + currentDocPath;
+                        history.replaceState(null, '', newUrl);
+                    }
+                }
+                
+                // 加载文档内容
+                if (currentDocPath) {
+                    loadDoc(currentDocPath);
+                    highlightActiveDoc(currentDocPath);
+                }
             })
             .catch(error => {
                 console.error('加载文档数据时出错:', error);
-                docsContainer.innerHTML = `<div class="error-message">加载文档数据失败，请刷新页面重试</div>`;
+                docsContainer.innerHTML = '<div class="error-message"><h2>加载文档失败</h2><p>请检查您的网络连接或稍后再试。</p></div>';
             });
     }
     
@@ -474,6 +484,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // 确保移动菜单按钮在文档页面正常工作
+    function setupDocsMobileMenu() {
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const headerNav = document.querySelector('header nav');
+        
+        if (mobileMenuButton && headerNav) {
+            mobileMenuButton.addEventListener('click', function() {
+                headerNav.classList.toggle('active');
+                
+                // 显示/隐藏遮罩
+                let overlay = document.querySelector('.overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'overlay';
+                    document.body.appendChild(overlay);
+                    
+                    // 点击遮罩关闭菜单
+                    overlay.addEventListener('click', function() {
+                        headerNav.classList.remove('active');
+                        this.classList.remove('active');
+                    });
+                }
+                
+                if (headerNav.classList.contains('active')) {
+                    overlay.classList.add('active');
+                    overlay.style.opacity = '1';
+                    overlay.style.display = 'block';
+                } else {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        overlay.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+    }
+    
     // 初始加载文档数据
     loadDocsData();
     
@@ -500,4 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(handleResponsiveLayout, 100);
     });
+    
+    // 初始化文档页面专用的移动菜单
+    setupDocsMobileMenu();
 }); 
