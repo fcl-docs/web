@@ -484,44 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 确保移动菜单按钮在文档页面正常工作
-    function setupDocsMobileMenu() {
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        const headerNav = document.querySelector('header nav');
-        
-        if (mobileMenuButton && headerNav) {
-            mobileMenuButton.addEventListener('click', function() {
-                headerNav.classList.toggle('active');
-                
-                // 显示/隐藏遮罩
-                let overlay = document.querySelector('.overlay');
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.className = 'overlay';
-                    document.body.appendChild(overlay);
-                    
-                    // 点击遮罩关闭菜单
-                    overlay.addEventListener('click', function() {
-                        headerNav.classList.remove('active');
-                        this.classList.remove('active');
-                    });
-                }
-                
-                if (headerNav.classList.contains('active')) {
-                    overlay.classList.add('active');
-                    overlay.style.opacity = '1';
-                    overlay.style.display = 'block';
-                } else {
-                    overlay.style.opacity = '0';
-                    setTimeout(() => {
-                        overlay.classList.remove('active');
-                        overlay.style.display = 'none';
-                    }, 300);
-                }
-            });
-        }
-    }
-    
     // 初始加载文档数据
     loadDocsData();
     
@@ -548,7 +510,4 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(handleResponsiveLayout, 100);
     });
-    
-    // 初始化文档页面专用的移动菜单
-    setupDocsMobileMenu();
 }); 
