@@ -440,22 +440,44 @@ header nav ul li a {
     text-decoration: none;
 }
 
-/* 移动端导航样式 */
+/* 更新移动导航样式，确保与文档页面一致 */
 @media (max-width: 768px) {
     header nav {
-        display: none;
-        width: 100%;
-        margin-top: 10px;
-        background-color: rgba(44, 151, 75, 0.95);
-        border-radius: 4px;
-        position: static !important;
-        padding: 0 !important;
-        height: auto !important;
-        max-width: none !important;
-        left: 0 !important;
+        display: none !important; /* 默认隐藏 */
     }
     
     header nav.active {
-        display: block;
+        display: block !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 80% !important;
+        height: 100vh !important;
+        background-color: #2c974b !important;
+        z-index: 100;
+        padding: 20px !important;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3) !important;
+        overflow-y: auto;
+    }
+    
+    /* 确保菜单项垂直排列 */
+    header nav.active ul {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    header nav.active ul li {
+        margin: 10px 0 !important;
+        width: 100% !important;
+    }
+    
+    header nav.active ul li a {
+        display: block !important;
+        padding: 8px 0 !important;
+    }
+    
+    /* 菜单遮罩层样式 */
+    .menu-overlay {
+        opacity: 1 !important;
     }
 } 

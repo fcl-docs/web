@@ -224,50 +224,5 @@
     </script>
     <script src="js/markdown-extensions.js"></script>
     <script src="js/docs.js"></script>
-    <script>
-        // 文档页面专用菜单处理脚本
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const headerNav = document.querySelector('header nav');
-            
-            // 创建遮罩层
-            if (!document.querySelector('.menu-overlay')) {
-                const overlay = document.createElement('div');
-                overlay.className = 'menu-overlay';
-                overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99;';
-                document.body.appendChild(overlay);
-                
-                // 点击遮罩层关闭菜单
-                overlay.addEventListener('click', function() {
-                    headerNav.classList.remove('active');
-                    this.style.display = 'none';
-                    document.body.style.overflow = '';
-                });
-            }
-            
-            // 为菜单按钮添加点击事件
-            if (mobileMenuButton) {
-                // 重置事件监听器
-                const newButton = mobileMenuButton.cloneNode(true);
-                mobileMenuButton.parentNode.replaceChild(newButton, mobileMenuButton);
-                
-                newButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    
-                    const overlay = document.querySelector('.menu-overlay');
-                    
-                    if (headerNav.classList.contains('active')) {
-                        headerNav.classList.remove('active');
-                        overlay.style.display = 'none';
-                        document.body.style.overflow = '';
-                    } else {
-                        headerNav.classList.add('active');
-                        overlay.style.display = 'block';
-                        document.body.style.overflow = 'hidden';
-                    }
-                });
-            }
-        });
-    </script>
 </body>
 </html> 
