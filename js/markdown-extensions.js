@@ -21,11 +21,13 @@ const fcl = {
   
   // 处理自定义容器
   processCustomContainers: function(markdown) {
-    // 定义自定义容器的正则表达式模式
-    const containerPattern = /^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)(?:\n):::$/gm;
+    // 更准确的容器正则表达式 - 注意前后的换行匹配
+    const containerPattern = /^:::(\s*)(tip|warning|danger|info|details)(?:\s+(.+?))?(?:\s*)\n([\s\S]*?)\n:::\s*$/gm;
     
     // 处理自定义容器，将其转换为HTML
     return markdown.replace(containerPattern, function(match, spacing, type, title, content) {
+        console.log(`找到${type}容器，标题: "${title || '无'}", 内容长度: ${content.length}`);
+        
         title = title || getDefaultTitle(type);
         
         let processedContent = content.trim();
@@ -35,7 +37,15 @@ const fcl = {
             processedContent = fcl.processCustomContainers(processedContent);
         }
         
-        // 使用适当的HTML格式化自定义容器
+        // 特殊处理details容器
+        if (type === 'details') {
+            return `<details class="custom-container ${type}">
+                <summary class="custom-container-title">${title}</summary>
+                <div class="custom-container-content">${processedContent}</div>
+            </details>`;
+        }
+        
+        // 其他容器
         return `<div class="custom-container ${type}">
             <p class="custom-container-title">${title}</p>
             <div class="custom-container-content">${processedContent}</div>
@@ -183,6 +193,11 @@ const fcl = {
   // 初始化代码组事件处理
   initCodeGroups: function() {
     document.querySelectorAll('.code-group-tab').forEach(tab => {
+        if (tab.getAttribute('data-initialized') === 'true') {
+            return; // 避免重复初始化
+        }
+        
+        tab.setAttribute('data-initialized', 'true');
         tab.addEventListener('click', function() {
             const group = this.closest('.code-group');
             const tabIndex = this.getAttribute('data-tab');
@@ -200,11 +215,82 @@ const fcl = {
             group.querySelector(`.code-group-content[data-tab="${tabIndex}"]`).classList.add('active');
         });
     });
+  },
+  
+  // 添加特殊处理代码组容器的函数
+  processCodeGroupContainers: function(markdown) {
+    // 处理代码组容器
+    const codeGroupPattern = /^:::code-group\s*\n([\s\S]*?)\n:::\s*$/gm;
+    
+    return markdown.replace(codeGroupPattern, function(match, content) {
+        // 将内容转换为代码组HTML
+        const codeBlocks = [];
+        let codeBlockPattern = /^```(\w+)(.*?)\n([\s\S]*?)```\s*$/gm;
+        let blockMatch;
+        
+        while ((blockMatch = codeBlockPattern.exec(content)) !== null) {
+            codeBlocks.push({
+                lang: blockMatch[1],
+                title: blockMatch[2].trim() || blockMatch[1],
+                content: blockMatch[3]
+            });
+        }
+        
+        if (codeBlocks.length === 0) {
+            return match; // 如果没有找到代码块，保持原样
+        }
+        
+        // 构建代码组HTML
+        let tabs = '';
+        let contents = '';
+        
+        codeBlocks.forEach((block, index) => {
+            const active = index === 0 ? ' active' : '';
+            tabs += `<button class="code-group-tab${active}" data-tab="${index}">${block.title}</button>`;
+            contents += `<div class="code-group-content${active}" data-tab="${index}"><pre><code class="language-${block.lang}">${block.content}</code></pre></div>`;
+        });
+        
+        return `<div class="code-group">
+            <div class="code-group-tabs">${tabs}</div>
+            <div class="code-group-contents">${contents}</div>
+        </div>`;
+    });
+  },
+  
+  // 初始化可折叠容器
+  initCollapsibleContainers: function() {
+    // details 容器已经有原生折叠功能，无需添加JavaScript
+    console.log('已初始化可折叠容器');
+  },
+  
+  // 设置完整的处理管道
+  processMarkdown: function(markdown) {
+    // 1. 处理自定义容器
+    let result = this.processCustomContainers(markdown);
+    
+    // 2. 处理代码组容器
+    result = this.processCodeGroupContainers(result);
+    
+    // 3. 转换为HTML
+    result = marked.parse(result);
+    
+    // 4. 处理代码组
+    result = this.processCodeGroups(result);
+    
+    return result;
   }
 };
 
 // 在DOMContentLoaded时初始化
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化代码组事件处理
-    fcl.initCodeGroups();
+    // 注册全局初始化函数
+    if (window.fcl) {
+        // 初始化代码组事件处理
+        fcl.initCodeGroups();
+        
+        // 初始化折叠容器
+        fcl.initCollapsibleContainers();
+        
+        console.log('FCL Markdown扩展已初始化');
+    }
 }); 

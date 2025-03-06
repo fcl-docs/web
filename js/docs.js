@@ -140,17 +140,18 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(markdown => {
                 try {
-                    // 使用自定义容器处理器处理Markdown
+                    // 确保FCL的扩展处理先于marked执行
+                    let processedMarkdown = markdown;
+                    
+                    // 首先处理自定义容器
                     if (window.fcl && typeof fcl.processCustomContainers === 'function') {
-                        markdown = fcl.processCustomContainers(markdown);
-                    } else {
-                        console.warn('未找到自定义容器处理函数，原始Markdown将直接传递给marked');
+                        processedMarkdown = fcl.processCustomContainers(processedMarkdown);
                     }
                     
-                    // 使用marked转换Markdown为HTML
-                    let html = marked.parse(markdown);
+                    // 然后使用marked转换为HTML
+                    let html = marked.parse(processedMarkdown);
                     
-                    // 处理代码组
+                    // 最后处理代码组
                     if (window.fcl && typeof fcl.processCodeGroups === 'function') {
                         html = fcl.processCodeGroups(html);
                     }
@@ -165,12 +166,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
                     
-                    // 初始化代码组交互
-                    if (window.fcl && typeof fcl.initCodeGroups === 'function') {
-                        fcl.initCodeGroups();
+                    // 初始化代码组和可折叠容器
+                    if (window.fcl) {
+                        if (typeof fcl.initCodeGroups === 'function') {
+                            fcl.initCodeGroups();
+                        }
+                        if (typeof fcl.initCollapsibleContainers === 'function') {
+                            fcl.initCollapsibleContainers();
+                        }
                     }
                     
-                    // 更新文档标题
+                    // 更新标题
                     updateDocTitle(docPath);
                     
                     // 滚动到顶部
@@ -178,12 +184,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.scrollTo(0, 0);
                 } catch (error) {
                     console.error('解析Markdown时出错:', error);
-                    docsContainer.innerHTML = `<div class="error-message">解析文档内容时出错: ${error.message}</div>`;
+                    docsContainer.innerHTML = `
+                        <div class="error-message">
+                            <h3>解析文档内容时出错</h3>
+                            <p>${error.message}</p>
+                            <p>请检查控制台以获取更多信息。</p>
+                        </div>`;
                 }
             })
             .catch(error => {
                 console.error('加载文档时出错:', error);
-                docsContainer.innerHTML = `<div class="error-message">无法加载文档: ${error.message}</div>`;
+                docsContainer.innerHTML = `
+                    <div class="error-message">
+                        <h3>无法加载文档</h3>
+                        <p>${error.message}</p>
+                        <p>请确保文档路径正确，并刷新页面重试。</p>
+                    </div>`;
             });
     }
     
@@ -394,4 +410,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 确保在DOMContentLoaded事件中进行初始处理
     setTimeout(handleResponsiveLayout, 100);
+
+    // 调试辅助函数 - 在控制台中查看处理过程
+    window.debugFCLMarkdown = function(docPath) {
+        fetch(`data/docs/${docPath}.md`)
+            .then(response => response.text())
+            .then(markdown => {
+                console.group('FCL Markdown 调试');
+                console.log("原始Markdown:");
+                console.log(markdown);
+                
+                if (window.fcl) {
+                    console.log("\n处理自定义容器:");
+                    try {
+                        const containers = fcl.processCustomContainers(markdown);
+                        console.log(containers);
+                        
+                        console.log("\n处理代码组容器:");
+                        const codeGroups = fcl.processCodeGroupContainers(containers);
+                        console.log(codeGroups);
+                        
+                        console.log("\nMarked 转换后:");
+                        const html = marked.parse(codeGroups);
+                        console.log(html);
+                        
+                        console.log("\n代码组处理后:");
+                        const processed = fcl.processCodeGroups(html);
+                        console.log(processed);
+                    } catch (e) {
+                        console.error("处理过程中出错:", e);
+                    }
+                } else {
+                    console.warn("FCL 扩展对象未定义");
+                }
+                console.groupEnd();
+            })
+            .catch(err => console.error("获取文档出错", err));
+    };
+
+    // 添加调试按钮
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const container = document.querySelector('.docs-content .container');
+        if (container) {
+            const debugBtn = document.createElement('button');
+            debugBtn.textContent = '调试当前文档';
+            debugBtn.className = 'debug-button';
+            debugBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:1000;padding:10px;background:#f06292;color:white;border:none;border-radius:4px;cursor:pointer;';
+            
+            debugBtn.addEventListener('click', function() {
+                const docPath = new URLSearchParams(window.location.search).get('doc') || 'getting-started/introduction';
+                window.debugFCLMarkdown(docPath);
+                alert(`正在调试文档: ${docPath}\n请查看控制台输出`);
+            });
+            
+            document.body.appendChild(debugBtn);
+        }
+    }
 }); 
