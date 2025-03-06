@@ -1,0 +1,80 @@
+/* 下载页英雄区域样式 */
+.download-hero {
+    background-color: #2c9744;
+    background-image: linear-gradient(135deg, #2c9744 0%, #246638 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.download-hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.download-hero p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 下载选项样式 */
+.download-options {
+    background-color: white;
+    padding: 60px 0;
+}
+
+.download-options h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.version-selector {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.version-tabs {
+    display: flex;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.version-tab {
+    padding: 15px 20px;
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.version-tab:hover {
+    background-color: #e8e8e8;
+}
+
+.version-tab.active {
+    background-color: white;
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.version-content {
+    display: none;
+    padding: 30px;
+}
+
+.version-content.active {
+    display: block;
+}
+
+.version-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;

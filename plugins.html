@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCL插件下载 - Fold Craft Launcher</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/plugins.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Fold Craft Launcher</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="download.html">启动器下载</a></li>
+                    <li><a href="plugins.html" class="active">插件下载</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="plugins-hero">
+        <div class="container">
+            <h2>FCL插件下载</h2>
+            <p>扩展您的Minecraft体验，下载各种插件和模组</p>
+        </div>
+    </section>
+
+    <section class="plugins-filter">
+        <div class="container">
+            <div class="filter-options">
+                <div class="filter-category">
+                    <label for="category-filter">分类：</label>
+                    <select id="category-filter">
+                        <option value="all">全部</option>
+                        <option value="optimization">优化</option>
+                        <option value="gameplay">游戏玩法</option>
+                        <option value="visual">视觉效果</option>
+                        <option value="utility">实用工具</option>
+                        <option value="modpack">整合包</option>
+                    </select>
+                </div>
+                <div class="filter-version">
+                    <label for="version-filter">游戏版本：</label>
+                    <select id="version-filter">
+                        <option value="all">全部</option>
+                        <option value="1.21.2">1.21.2</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.19.4">1.19.4</option>
+                        <option value="1.18.2">1.18.2</option>
+                        <option value="1.16.5">1.16.5</option>
+                        <option value="1.12.2">1.12.2</option>
+                    </select>
+                </div>
+                <div class="filter-loader">
+                    <label for="loader-filter">加载器：</label>
+                    <select id="loader-filter">
+                        <option value="all">全部</option>
+                        <option value="forge">Forge</option>
+                        <option value="neoforge">NeoForge</option>
+                        <option value="fabric">Fabric</option>
+                        <option value="quilt">Quilt</option>
+                        <option value="optifine">OptiFine</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="plugin-search" placeholder="搜索插件...">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="plugins-list">
+        <div class="container">
+            <div id="plugins-container" class="plugins-grid">
+                <!-- 插件列表会通过JavaScript动态加载 -->
+            </div>
+            <div class="pagination">
+                <button id="load-more" class="btn btn-secondary">加载更多</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="plugins-info">
+        <div class="container">
+            <h2>如何安装插件</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-number">1</div>
+                    <h3>下载插件</h3>
+                    <p>选择您需要的插件并下载到设备</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">2</div>
+                    <h3>打开FCL</h3>
+                    <p>启动FCL，进入游戏管理界面</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">3</div>
+                    <h3>选择版本</h3>
+                    <p>选择您想安装插件的游戏版本</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">4</div>
+                    <h3>复制插件</h3>
+                    <p>将下载的插件(JAR文件)复制到mods文件夹中</p>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">5</div>
+                    <h3>启动游戏</h3>
+                    <p>启动游戏，插件将自动加载</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Fold Craft Launcher</h3>
+                    <p>在Android上运行Minecraft: Java Edition的开源启动器</p>
+                </div>
+                <div class="footer-links">
+                    <h4>链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="download.html">启动器下载</a></li>
+                        <li><a href="plugins.html">插件下载</a></li>
+                        <li><a href="https://github.com/FCL-Team/FoldCraftLauncher">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 FCL-Team. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/plugins.js"></script>
+</body>
+</html> 
